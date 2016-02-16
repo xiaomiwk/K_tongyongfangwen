@@ -1,4 +1,4 @@
-# K_TONGYONGFANGWEN
+## 通用访问
 以“对象”、“属性”、“方法”、“事件”为元素，适用于跨平台的轻量级分布式通信协议，以及.NET SDK、通用工具、demo
 
 **特点**
@@ -19,7 +19,36 @@
             __IT服务端.端口 = 8888;
             __IT服务端.开启();
             
+    public interface IB状态_S
+    {
+        M概要状态 查询概要状态();
 
+        List<M业务概要> 查询业务概要(string 类别, string 属性);
+
+        void 设置属性(string 类别, string 属性, Func<M业务概要> 获取属性);
+
+        void 删除属性(string 类别, string 属性);
+
+        int 未清除告警数量 { get; }
+
+        DateTime 启动时间 { get; }
+
+        DateTime 状态开始时间 { get; }
+
+        E健康状态 健康状态 { get; }
+
+        List<M上报告警> 查询未清除告警(M查询条件 查询条件);
+
+        void 初始化(List<M上报告警> 未清除告警, DateTime 启动时间, Func<E健康状态> 设置健康状态 = null);
+
+        void 新增告警(M上报告警 告警);
+
+        void 清除告警(M上报清除 告警);
+
+        event Action<M概要状态> 健康状态变化;
+
+    }
+    
     public class B状态_S : IB状态_S
     {
         private IT服务端 _IT服务端 = H容器.取出<IT服务端>();
@@ -306,6 +335,31 @@
                 _IT客户端 = FT通用访问工厂.创建客户端();
                 _IT客户端.连接(_地址);
                 
+                
+    public interface IB状态_C
+    {
+        M概要状态 查询概要状态();
+
+        List<M业务概要> 查询业务概要(string 类别 = "", string 属性 = "");
+
+        int 未清除告警数量 { get; }
+
+        DateTime 启动时间 { get; }
+
+        E健康状态 健康状态 { get; }
+
+        DateTime 状态开始时间 { get; }
+
+        List<M上报告警> 查询未清除告警(M查询条件 查询条件);
+
+        event Action<M上报告警> 新增了告警;
+
+        event Action<M上报清除> 清除了告警;
+
+        event Action<M概要状态> 健康状态变化;
+
+    }
+   
     public class B状态_C : IB状态_C
     {
         private IT客户端 _IT客户端;
