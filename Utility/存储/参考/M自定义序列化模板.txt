@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Utility.模式
+{
+    [Serializable]
+    class M自定义序列化模板 : System.Runtime.Serialization.ISerializable
+    {
+        public object 字段0 { get; set; }
+
+        public int 字段1 { get; set; }
+
+        public string 字段2 { get; set; }
+
+        public byte[] 字段3 { get; set; }
+
+        public List<int> 字段4 { get; set; }
+
+        public List<object> 字段5 { get; set; }
+
+        #region Object serialization/deserialization
+
+        /// <summary>
+        ///     Serialization method. Inherited from the ISerializable interface.
+        /// </summary>
+        void System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        {
+            info.AddValue("字段0", 字段0);
+            info.AddValue("字段1", 字段1);
+            info.AddValue("字段2", 字段2);
+            info.AddValue("字段3", 字段3);
+            info.AddValue("字段4", 字段4);
+            info.AddValue("字段5", 字段5);
+        }
+
+        /// <summary>
+        ///     Deserialization constructor
+        /// </summary>
+        protected M自定义序列化模板(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        {
+            字段0 = info.GetValue("字段0", 字段0.GetType());
+            字段1 = (int)info.GetValue("字段1", 字段1.GetType());
+            字段2 = (string)info.GetValue("字段2", 字段2.GetType());
+            字段3 = (byte[])info.GetValue("字段3", 字段3.GetType());
+            字段4 = (List<int>)info.GetValue("字段4", 字段4.GetType());
+            字段5 = (List<object>)info.GetValue("字段5", 字段5.GetType());
+        }
+
+        #endregion //(Object serialization/deserialization)
+
+    }
+}

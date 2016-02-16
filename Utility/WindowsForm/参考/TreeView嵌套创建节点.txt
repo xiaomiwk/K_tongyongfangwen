@@ -1,0 +1,34 @@
+﻿        public void 初始化(M部门 __部门)
+        {
+            _根部门 = __部门;
+            this.out号码簿.Nodes.Clear();
+            if (_根部门 == null)
+            {
+                return;
+            }
+            绑定部门(this.out号码簿.Nodes, _根部门);
+            this.out号码簿.ExpandAll();
+
+        }
+
+        private void 绑定部门(TreeNodeCollection nodes, M部门 部门)
+        {
+            if (部门.组号列表 != null && 部门.组号列表.Count > 0)
+            {
+                var __索引 = nodes.Add(new TreeNode("组号"));
+                部门.组号列表.ForEach(q => nodes[__索引].Nodes.Add(new TreeNode(q.名称) { Tag = q }));
+            }
+            if (部门.个号列表 != null && 部门.个号列表.Count > 0)
+            {
+                var __索引 = nodes.Add(new TreeNode("个号"));
+                部门.个号列表.ForEach(q => nodes[__索引].Nodes.Add(new TreeNode(q.名称) { Tag = q}));
+            }
+            if (部门.下属部门 != null && 部门.下属部门.Count > 0)
+            {
+                部门.下属部门.ForEach(q =>
+                {
+                    var __索引 = nodes.Add(new TreeNode(q.名称) { Tag = q });
+                    绑定部门(nodes[__索引].Nodes, q);
+                });
+            }
+        }

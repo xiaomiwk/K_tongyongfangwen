@@ -1,0 +1,401 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+
+namespace Utility.存储
+{
+    public static class HExcel存储
+    {
+        public static List<DataTable> 导入表格(string __文件路径)
+        {
+            var __结果 = new List<DataTable>();
+            using (var __文件流 = File.OpenRead(__文件路径))
+            {
+                using (IWorkbook __工作簿 = new HSSFWorkbook(__文件流))
+                {
+                    for (int k = 0; k < __工作簿.NumberOfSheets; k++)
+                    {
+                        using (ISheet __工作表 = __工作簿.GetSheetAt(k))
+                        {
+                            var __数据表 = new DataTable();
+
+                            //计算行数列数,第一行为标题行
+                            IRow __标题行 = __工作表.GetRow(0);
+                            if (__标题行 == null)
+                            {
+                                break;
+                            }
+                            int __最后的单元格序号 = __标题行.LastCellNum;//LastCellNum = PhysicalNumberOfCells  
+                            int __最后行序号 = __工作表.LastRowNum;//LastRowNum = PhysicalNumberOfRows - 1  
+
+                            //设置标题
+                            for (int i = __标题行.FirstCellNum; i < __最后的单元格序号; i++)
+                            {
+                                var __数据列 = new DataColumn { Caption = __标题行.GetCell(i).StringCellValue };
+                                __数据表.Columns.Add(__数据列);
+                            }
+
+                            //设置数据
+                            for (int i = (__工作表.FirstRowNum + 1); i <= __最后行序号; i++)
+                            {
+                                IRow __表格行 = __工作表.GetRow(i);
+                                if (__表格行 != null)
+                                {
+                                    DataRow __新数据行 = __数据表.NewRow();
+                                    for (int j = __表格行.FirstCellNum; j < __最后的单元格序号; j++)
+                                    {
+                                        if (__表格行.GetCell(j) != null)
+                                            __新数据行[j] = __表格行.GetCell(j).ToString();
+                                    }
+                                    __数据表.Rows.Add(__新数据行);
+                                }
+
+                            }
+                            __结果.Add(__数据表);
+                        }
+                    }
+                }
+            }
+            return __结果;
+        }
+
+        /// <param name="__所有数据">List(int)表示导出到Excel的宽度,单位像素,为null表示不设置</param>
+        public static void 导出到表格(string __文件路径, params Tuple<E导出结构, DataTable, List<int>>[] __所有数据)
+        {
+            using (IWorkbook __工作簿 = new HSSFWorkbook())
+            {
+                foreach (var __导出参数 in __所有数据)
+                {
+                    var __数据表 = __导出参数.Item2;
+                    ISheet __工作表 = __工作簿.CreateSheet(__数据表.TableName);
+
+                    //获取基本样式
+                    ICellStyle __标题单元格样式 = 获取默认导出的标题单元格样式(__工作簿);
+                    ICellStyle __数据单元格样式 = 获取默认导出的数据单元格样式(__工作簿);
+
+                    //设置列宽
+                    if (__导出参数.Item3 != null)
+                    {
+                        for (int i = 0; i < __导出参数.Item3.Count; i++)
+                        {
+                            __工作表.SetColumnWidth(i, __导出参数.Item3[i] * 37);
+                        }
+                    }
+
+                    //设置标题行
+                    IRow __标题行 = __工作表.CreateRow(0);
+                    __标题行.Height = 400;
+                    foreach (DataColumn __数据列 in __数据表.Columns)
+                    {
+                        ICell __单元格 = __标题行.CreateCell(__数据列.Ordinal);
+                        __单元格.SetCellValue(__数据列.Caption);
+                        __单元格.CellStyle = __标题单元格样式;
+                    }
+
+                    //设置数据行
+                    int __当前表格行索引 = 1;
+                    foreach (DataRow __数据行 in __数据表.Rows)
+                    {
+                        IRow __当前表格行 = __工作表.CreateRow(__当前表格行索引);
+                        __当前表格行.Height = 300;
+                        foreach (DataColumn __数据列 in __数据表.Columns)
+                        {
+                            ICell __单元格 = __当前表格行.CreateCell(__数据列.Ordinal);
+                            __单元格.SetCellValue(__数据行[__数据列].ToString());
+                            __单元格.CellStyle = __数据单元格样式;
+                        }
+                        __当前表格行索引++;
+                    }
+
+                    //如果是树结构,合并
+                    if (__导出参数.Item1 == E导出结构.树)
+                    {
+                        for (var i = 0; i < __数据表.Columns.Count - 1; i++)
+                        {
+                            var __起始行数 = 0;
+                            var __起始参照值 = __数据表.Rows[__起始行数][i].ToString();
+                            for (var j = __起始行数 + 1; j < __数据表.Rows.Count; j++)
+                            {
+                                var __当前值 = __数据表.Rows[j][i].ToString();
+                                if (string.IsNullOrEmpty(__当前值))
+                                {
+                                    __起始行数 = j;
+                                    __起始参照值 = string.Empty;
+                                    continue;
+                                }
+
+                                //最后一组
+                                if (j == __数据表.Rows.Count - 1)
+                                {
+                                    if (j > __起始行数 + 1)
+                                    {
+                                        var __合并区域 = new CellRangeAddress(__起始行数 + 1, __数据表.Rows.Count, i, i);
+                                        __工作表.AddMergedRegion(__合并区域);
+                                    }
+                                }
+                                else if (!__起始参照值.Equals(__当前值))
+                                {
+                                    if (j > __起始行数 + 1)
+                                    {
+                                        var __合并区域 = new CellRangeAddress(__起始行数 + 1, j, i, i);
+                                        __工作表.AddMergedRegion(__合并区域);
+                                    }
+                                    __起始行数 = j;
+                                    __起始参照值 = __数据表.Rows[__起始行数][i].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //存储到文件
+                using (var __文件流 = new FileStream(__文件路径, FileMode.Create, FileAccess.Write))
+                {
+                    __工作簿.Write(__文件流);
+                }
+            }
+        }
+
+        static ICellStyle 获取默认导出的标题单元格样式(IWorkbook workbook)
+        {
+            ICellStyle style = workbook.CreateCellStyle();
+
+            //设置对齐
+            style.Alignment = HorizontalAlignment.CENTER;
+            style.VerticalAlignment = VerticalAlignment.CENTER;
+
+            //设置字体
+            IFont font = workbook.CreateFont();
+            font.FontHeight = 17 * 17;
+            style.SetFont(font);
+
+            //设置边框
+            style.BorderBottom = CellBorderType.THIN;
+            style.BorderLeft = CellBorderType.THIN;
+            style.BorderRight = CellBorderType.THIN;
+            style.BorderTop = CellBorderType.THIN;
+            style.BottomBorderColor = HSSFColor.BLACK.index;
+            style.LeftBorderColor = HSSFColor.BLACK.index;
+            style.RightBorderColor = HSSFColor.BLACK.index;
+            style.TopBorderColor = HSSFColor.BLACK.index;
+
+            //设置背景
+            style.FillForegroundColor = HSSFColor.GREY_25_PERCENT.index;
+            style.FillPattern = FillPatternType.SOLID_FOREGROUND;
+
+            return style;
+        }
+
+        static ICellStyle 获取默认导出的数据单元格样式(IWorkbook workbook)
+        {
+            ICellStyle style = workbook.CreateCellStyle();
+
+            //设置对齐
+            style.Alignment = HorizontalAlignment.LEFT;
+            style.VerticalAlignment = VerticalAlignment.CENTER;
+
+            //设置边框
+            style.BorderBottom = CellBorderType.THIN;
+            style.BorderLeft = CellBorderType.THIN;
+            style.BorderRight = CellBorderType.THIN;
+            style.BorderTop = CellBorderType.THIN;
+            style.BottomBorderColor = HSSFColor.BLACK.index;
+            style.LeftBorderColor = HSSFColor.BLACK.index;
+            style.RightBorderColor = HSSFColor.BLACK.index;
+            style.TopBorderColor = HSSFColor.BLACK.index;
+
+            return style;
+        }
+
+        public static List<M树节点<string>> 表格转树(DataTable __数据表)
+        {
+            var __结果 = new List<M树节点<string>>();
+            var __节点位置缓存 = new Dictionary<int, M树节点<string>>();
+            for (var i = 0; i < __数据表.Columns.Count; i++)
+            {
+                var __父节点位置缓存 = __节点位置缓存;
+                __节点位置缓存 = new Dictionary<int, M树节点<string>>();
+
+                var __起始参照值 = string.Empty;
+
+                for (var j = 0; j < __数据表.Rows.Count; j++)
+                {
+                    var __当前值 = __数据表.Rows[j][i].ToString();
+                    if (!string.IsNullOrEmpty(__当前值) && !__当前值.Equals(__起始参照值))
+                    {
+                        __起始参照值 = __当前值;
+                        M树节点<string> __当前父节点 = null;
+                        if (__父节点位置缓存.Count != 0)
+                        {
+                            var __位置数组 = __父节点位置缓存.Keys.ToArray();
+                            if (__位置数组.Last() <= j)
+                            {
+                                __当前父节点 = __父节点位置缓存[__位置数组.Last()];
+                            }
+                            else
+                            {
+                                for (var k = 1; k < __位置数组.Length; k++)
+                                {
+                                    if (__位置数组[k - 1] <= j && j < __位置数组[k])
+                                    {
+                                        __当前父节点 = __父节点位置缓存[__位置数组[k - 1]];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        var __当前节点 = new M树节点<string>(__起始参照值, __当前父节点);
+                        __节点位置缓存[j] = __当前节点;
+                        if (__父节点位置缓存.Count == 0)
+                        {
+                            __结果.Add(__当前节点);
+                        }
+                    }
+                }
+            }
+            return __结果;
+        }
+
+        public static DataTable 树转表格(List<M树节点<string>> __数据树)
+        {
+            var __结果 = new DataTable();
+            var __所有最低级节点 = new List<M树节点<string>>();
+            foreach (var __节点 in __数据树)
+            {
+                获取所有最低级节点(__所有最低级节点, __节点);
+            }
+            var __最大级数 = 0;
+            foreach (var __节点 in __所有最低级节点)
+            {
+                var __归属栈 = new Stack<M树节点<string>>();
+                获取节点归属栈(__归属栈, __节点);
+                var __栈深度 = __归属栈.Count;
+                if (__栈深度 > __最大级数)
+                {
+                    for (int i = __最大级数; i < __栈深度; i++)
+                    {
+                        __结果.Columns.Add(new DataColumn());
+                    }
+                    __最大级数 = __栈深度;
+                }
+                var __row = __结果.NewRow();
+                for (var i = 0; i < __栈深度; i++)
+                {
+                    __row[i] = __归属栈.Pop().内容;
+                }
+                __结果.Rows.Add(__row);
+            }
+            return __结果;
+        }
+
+        static void 获取所有最低级节点(List<M树节点<string>> __结果, M树节点<string> __节点)
+        {
+            if (__节点.子节点.Count == 0)
+            {
+                __结果.Add(__节点);
+            }
+            else
+            {
+                foreach (var __下属单位 in __节点.子节点)
+                {
+                    获取所有最低级节点(__结果, __下属单位);
+                }
+            }
+        }
+
+        static void 获取节点归属栈(Stack<M树节点<string>> __栈, M树节点<string> __节点)
+        {
+            __栈.Push(__节点);
+            if (__节点.父节点 != null)
+            {
+                获取节点归属栈(__栈, __节点.父节点);
+            }
+        }
+
+        public class M树节点<T>
+        {
+            public List<M树节点<T>> 子节点 { get; set; }
+
+            public M树节点<T> 父节点 { get; set; }
+
+            public T 内容 { get; set; }
+
+            public M树节点(T 内容, M树节点<T> 父节点)
+            {
+                this.子节点 = new List<M树节点<T>>();
+                this.内容 = 内容;
+                this.父节点 = 父节点;
+                if (父节点 != null)
+                {
+                    父节点.子节点.Add(this);
+                }
+            }
+
+            public M树节点(T 内容, List<M树节点<T>> 子节点)
+            {
+                this.子节点 = 子节点;
+                this.内容 = 内容;
+                foreach (var __节点 in 子节点)
+                {
+                    __节点.父节点 = this;
+                }
+            }
+
+            public override string ToString()
+            {
+                return 内容.ToString();
+            }
+        }
+
+        public enum E导出结构
+        {
+            表格,
+            树
+        }
+
+        #region 客户端示例
+        //List<UExcel存储.M树节点<string>> 业务对象转树(List<M单位> __业务对象)
+        //{
+        //    var __树 = new List<UExcel存储.M树节点<string>>();
+        //    foreach (var __单个业务对象 in __业务对象)
+        //    {
+        //        var __树节点 = new UExcel存储.M树节点<string>(__单个业务对象.名称, 业务对象转树(__单个业务对象.下属单位));
+        //        __树.Add(__树节点);
+        //    }
+        //    return __树;
+        //}
+
+        //List<M单位> 树转业务对象(List<UExcel存储.M树节点<string>> __树)
+        //{
+        //    var __业务对象 = new List<M单位>();
+        //    foreach (var __树节点 in __树)
+        //    {
+        //        var __单个业务对象 = new M单位(__树节点.内容);
+        //        __业务对象.Add(__单个业务对象);
+        //        __单个业务对象.下属单位.AddRange(树转业务对象(__树节点.子节点).ToArray());
+        //    }
+        //    return __业务对象;
+        //}
+
+        //void 层次转表格结构(List<M单位> __结果, List<M单位> __层次结构)
+        //{
+        //    __结果.AddRange(__层次结构);
+        //    foreach (var __单位 in __层次结构)
+        //    {
+        //        if (__单位.下属单位 != null)
+        //        {
+        //            层次转表格结构(__结果, __单位.下属单位);
+        //        }
+        //    }
+        //}
+        #endregion
+
+    }
+}

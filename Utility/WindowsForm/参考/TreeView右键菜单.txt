@@ -1,0 +1,40 @@
+﻿        private Point _鼠标位置;
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            this.out号码簿.MouseDown += TV_MouseDown;
+            this.do号码簿_菜单.Opening += do号码簿_菜单_Opening;
+        }
+
+        void TV_MouseDown(object sender, MouseEventArgs e)
+        {
+            _鼠标位置 = e.Location;
+        }
+
+        void do号码簿_菜单_Opening(object sender, CancelEventArgs e)
+        {
+            var __菜单 = sender as ContextMenuStrip;
+            if (__菜单 == null) return;
+            var __tv = __菜单.SourceControl as TreeView;
+            if (__tv == null) return;
+
+            var __node = __tv.GetNodeAt(_鼠标位置);
+            if (__node == null || __node.Tag == null)
+            {
+                e.Cancel = true;
+                return;
+            }
+            __tv.SelectedNode = __node;
+
+        }
+
+        void do号码簿_修改_Click(object sender, EventArgs e)
+        {
+            var __绑定 = this.out号码簿.SelectedNode.Tag;
+            var __个号 = __绑定 as M个号;
+            if (__个号 != null)
+            {
+                return;
+            }
+        }

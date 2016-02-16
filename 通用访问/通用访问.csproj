@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{967F394C-945C-43DA-A08D-B9B2C15C9646}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>通用访问</RootNamespace>
+    <AssemblyName>通用访问</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\调试输出\通用访问\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1685</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\资源\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DTO\Enum.cs" />
+    <Compile Include="DTO\M元数据.cs" />
+    <Compile Include="DTO\M注销事件.cs" />
+    <Compile Include="DTO\M实参.cs" />
+    <Compile Include="DTO\M对象.cs" />
+    <Compile Include="DTO\M对象概要.cs" />
+    <Compile Include="DTO\M属性.cs" />
+    <Compile Include="DTO\M形参.cs" />
+    <Compile Include="DTO\M事件.cs" />
+    <Compile Include="DTO\M接收事件.cs" />
+    <Compile Include="DTO\M属性值查询结果.cs" />
+    <Compile Include="DTO\M方法执行结果.cs" />
+    <Compile Include="DTO\M对象列表查询结果.cs" />
+    <Compile Include="DTO\M对象明细查询结果.cs" />
+    <Compile Include="DTO\M方法.cs" />
+    <Compile Include="DTO\M属性值查询请求.cs" />
+    <Compile Include="DTO\M方法执行请求.cs" />
+    <Compile Include="DTO\M对象列表查询请求.cs" />
+    <Compile Include="DTO\M对象明细查询请求.cs" />
+    <Compile Include="DTO\M订阅事件.cs" />
+    <Compile Include="DTO\M通知.cs" />
+    <Compile Include="FT通用访问工厂.cs" />
+    <Compile Include="HJSON.cs" />
+    <Compile Include="DTO\M子成员.cs" />
+    <Compile Include="H报文注册.cs" />
+    <Compile Include="B编解码器.cs" />
+    <Compile Include="自定义序列化\EnumConverter.cs" />
+    <Compile Include="自定义序列化\时间Converter.cs" />
+    <Compile Include="自定义序列化\DictionaryConverter.cs" />
+    <Compile Include="自定义序列化\IPAddressConverter.cs" />
+    <Compile Include="自定义序列化\IPEndPointConverter.cs" />
+    <Compile Include="客户端\BT客户端.cs" />
+    <Compile Include="IT客户端.cs" />
+    <Compile Include="IT服务端.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DTO\M心跳.cs" />
+    <Compile Include="服务端\BT服务端.cs" />
+    <Compile Include="自定义序列化\M实参Converter.cs" />
+    <Compile Include="自定义序列化\M属性值查询结果Converter.cs" />
+    <Compile Include="自定义序列化\M方法执行结果Converter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\INET\INET3\INET3.csproj">
+      <Project>{56d6cb6d-e9b9-4361-b487-cfb87b508653}</Project>
+      <Name>INET3</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

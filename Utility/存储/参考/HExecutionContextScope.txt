@@ -1,0 +1,166 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+
+namespace Utility.存储
+{
+    [Serializable]
+    public class ExecutionContext
+    {
+        [ThreadStatic]
+        private static ExecutionContext current;
+
+        public IDictionary<string, object> Items { get; internal set; }
+
+        internal ExecutionContext()
+        {
+            this.Items = new Dictionary<string, object>();
+        }
+
+        public T GetValue<T>(string name, T defaultValue = default(T))
+        {
+            object value;
+            if (this.Items.TryGetValue(name, out value))
+            {
+                return (T)value;
+            }
+            return defaultValue;
+        }
+
+        public void SetValue(string name, object value)
+        {
+            this.Items[name] = value;
+        }
+
+        public static ExecutionContext Current
+        {
+            get { return current; }
+            internal set { current = value; }
+        }
+
+        public DependentContext DepedentClone()
+        {
+            return new DependentContext(this);
+        }
+    }
+
+    [Serializable]
+    public class DependentContext : ExecutionContext
+    {
+        public Thread OriginalThread { get; private set; }
+        public DependentContext(ExecutionContext context)
+        {
+            this.OriginalThread = Thread.CurrentThread; 
+            this.Items = new Dictionary<string, object>(context.Items);
+        }
+    }
+
+    /// <summary>
+    /// 区间上下文，来自  Artech
+    /// </summary>
+    public class ExecutionContextScope : IDisposable
+    {
+        private readonly ExecutionContext originalContext = ExecutionContext.Current;
+
+        public ExecutionContextScope(ExecutionContextOption contextOption = ExecutionContextOption.Required)
+        {
+            switch (contextOption)
+            {
+                case ExecutionContextOption.RequiresNew:
+                    {
+                        ExecutionContext.Current = new ExecutionContext();
+                        break;
+                    }
+                case ExecutionContextOption.Required:
+                    {
+                        ExecutionContext.Current = originalContext ?? new ExecutionContext();
+                        break;
+                    }
+                case ExecutionContextOption.Suppress:
+                    {
+                        ExecutionContext.Current = null;
+                        break;
+                    }
+            }
+        }
+
+        public ExecutionContextScope(DependentContext dependentContext)
+        {
+            if (dependentContext.OriginalThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException("The DependentContextScope cannot be created in the thread in which the DependentContext is created.");
+            }
+            ExecutionContext.Current = dependentContext;
+        }
+
+        public void Dispose()
+        {
+            ExecutionContext.Current = originalContext;
+        }
+    }
+
+    public enum ExecutionContextOption
+    {
+        RequiresNew, Required, Suppress
+    }
+
+}
+
+//[TestMethod]
+//public void SetAndGetContexts1()
+//{
+//    string name = Guid.NewGuid().ToString();
+//    string value1 = Guid.NewGuid().ToString();
+//    string value2 = Guid.NewGuid().ToString();
+
+//    //1. Outside of ApplicationContextScope: ApplicationContext.Current = null
+//    Assert.IsNull(ExecutionContext.Current);
+
+//    //2. Current ApplicationContext is avilable in the ApplicationContextScope.
+//    using (ExecutionContextScope contextScope = new ExecutionContextScope())
+//    {
+//        ExecutionContext.Current.SetValue(name, value1);
+//        Assert.AreEqual<string>(value1, ExecutionContext.Current.GetValue<string>(name));
+//    }
+
+//    //3. Nested ApplicationContextScope: ApplicationContextOption.Required
+//    using (ExecutionContextScope contextScope1 = new ExecutionContextScope())
+//    {
+//        ExecutionContext.Current.SetValue(name, value1);
+//        using (ExecutionContextScope contextScope2 = new ExecutionContextScope(ExecutionContextOption.Required))
+//        {
+//            Assert.AreEqual<string>(value1, ExecutionContext.Current.GetValue<string>(name));
+
+//            ExecutionContext.Current.SetValue(name, value2);
+//            Assert.AreEqual<string>(value2, ExecutionContext.Current.GetValue<string>(name));
+//        }
+//        Assert.AreEqual<string>(value2, ExecutionContext.Current.GetValue<string>(name));
+//    }
+
+//    //4. Nested ApplicationContextScope: ApplicationContextOption.RequiresNew
+//    using (ExecutionContextScope contextScope1 = new ExecutionContextScope())
+//    {
+//        ExecutionContext.Current.SetValue(name, value1);
+//        using (ExecutionContextScope contextScope2 = new ExecutionContextScope(ExecutionContextOption.RequiresNew))
+//        {
+//            Assert.IsNotNull(ExecutionContext.Current);
+//            Assert.IsNull(ExecutionContext.Current.GetValue<string>(name));
+//            ExecutionContext.Current.SetValue(name, value2);
+//            Assert.AreEqual<string>(value2, ExecutionContext.Current.GetValue<string>(name));
+//        }
+//        Assert.AreEqual<string>(value1, ExecutionContext.Current.GetValue<string>(name));
+//    }
+
+//    //5. Nested ApplicationContextScope: ApplicationContextOption.Supress
+//    using (ExecutionContextScope contextScope1 = new ExecutionContextScope())
+//    {
+//        ExecutionContext.Current.SetValue(name, value1);
+//        using (ExecutionContextScope contextScope2 = new ExecutionContextScope(ExecutionContextOption.Suppress))
+//        {
+//            Assert.IsNull(ExecutionContext.Current);
+//        }
+//        Assert.AreEqual<string>(value1, ExecutionContext.Current.GetValue<string>(name));
+//    }
+//}

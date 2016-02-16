@@ -1,0 +1,50 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using System.Text;
+using System.Web;
+
+namespace Utility.存储
+{
+    /// <summary>
+    /// 应用程序上下文，来自  Artech
+    /// </summary>
+    /// <remarks>需要通过ASP.NET扩展解决Web应用的异步调用问题</remarks>
+    [Serializable]
+    public class HApplicationContext : Dictionary<string, object>, ILogicalThreadAffinative
+    {
+        public const string ContextKey = "Artech.ApplicationContexts.ApplicationContext";
+
+        public static HApplicationContext Current
+        {
+            get
+            {
+                if (null != HttpContext.Current)
+                {
+                    if (null == HttpContext.Current.Session[ContextKey])
+                    {
+                        HttpContext.Current.Session[ContextKey] = new HApplicationContext();
+                    }
+
+                    return HttpContext.Current.Session[ContextKey] as HApplicationContext;
+                }
+
+                if (null == CallContext.GetData(ContextKey))
+                {
+                    CallContext.SetData(ContextKey, new HApplicationContext());
+                }
+                return CallContext.GetData(ContextKey) as HApplicationContext;
+            }
+        }
+    }
+}
+
+ ////设置   
+ //ApplicationContext.Current["UserName"] = "Foo";   
+ ////读取   
+ //var userName = ApplicationContext.Current["UserName"];
+
+
+
+

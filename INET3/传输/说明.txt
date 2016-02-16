@@ -1,0 +1,170 @@
+﻿INetworkEngine 是所有引擎的根接口，只要是StriveEngine中的内置引擎，都实现了这个接口。
+
+IServerEngine 是服务端引擎接口。IPassiveEngine 是客户端引擎接口。
+
+ITcpServerEngine 是基于TCP的服务端引擎接口。ITcpPassiveEngine是基于TCP的客户端引擎接口。
+
+IUdpEngine 是基于UDP的通信引擎接口。由于UDP是非连接协议，可以认为UDP通信的双方是对等的，所以，服务端和客户端都使用IUdpEngine即可。
+
+ITextEngine 是基于文本协议的通信引擎的基接口。
+
+
+
+1.INetworkEngine
+
+（1）StriveEngine中的所有通信引擎在设置完必要的属性后，都必须调用Initialize方法进行初始化，初始化完成后，引擎实例才开始正常工作。
+
+（2）INetworkEngine从IDisposable继承，表明通信引擎内部持有了重要的资源，当不再使用其实例时，要尽快调用IDisposable的Dispose方法释放资源。
+
+（3）当通信引擎被释放后，会触发EngineDisposed事件，并且此后，Disposed属性将返回true。
+
+（4）请根据应用的需要谨慎地设置MaxMessageSize，如果设置的过大，可能会造成内存空间的浪费（特别是对于基于文本协议的服务端引擎）。
+
+（5）通过MessageReceived事件，可以得到通信引擎接收到的所有消息；通过MessageSent事件，可以监控通信引擎发送出去的所有消息。 
+
+
+2.IServerEngine
+
+（1）SendMessageToClient和PostMessageToClient 分别表示同步和异步发送消息给客户端。
+
+（2）ChannelIsBusy 指的是在与目标客户端的TCP连接上，是否有数据正在发送（服务端至客户端）。
+
+（3）ActionTypeOnChannelIsBusy 参数允许我们在通道繁忙时，丢弃不重要的消息。 
+
+
+3.IPassiveEngine 
+
+（1）SendMessageToServer和PostMessageToServer 分别表示同步和异步发送消息给服务端。
+
+（2）ChannelIsBusy 指的是当前与服务器的TCP连接上，是否有数据正在发送（客户端至服务端）。
+
+（3）ActionTypeOnChannelIsBusy 参数允许我们在通道繁忙时，丢弃不重要的消息。  
+
+
+4.ITcpServerEngine 
+
+（1）WriteTimeoutInMSecs 用于设置发送数据的超时。 最好给该属性赋一个适当的值，因为在某些情况下，发送数据可能会导致很长时间的阻塞。该属性只对同步发送有效。
+
+（2）MaxChannelCacheSize 是服务端的一个安全设置。该设置用于防止服务器为速度慢的通道缓存太多的消息，而导致服务器内存无限制增长。
+
+（3）ChangeListenerState 用于改变服务器的监听状态，其将触发ListenerStateChanged事件，并改变IsListening属性的值。
+
+        如果IsListening为false，表示当前不接受新的TCP连接请求。 
+
+（4）当有连接建立或断开时，将分别触发ClientConnected和ClientDisconnected事件。 
+
+
+5.ITcpPassiveEngine
+
+（1）如果AutoReconnect设置为true，表示启用自动重连，那么，当连接断开时，会按以下顺序触发相关事件： ConnectionInterrupted 、ConnectionRebuildStart 、   ConnectionRebuildSucceed/ConnectionRebuildFailure。
+
+（2）注意，如果AutoReconnect设置为true，CloseConnection将会先关闭当前连接，然后再启动自动重连。 
+
+
+6.IUdpEngine 
+
+UDP是非连接的协议，所以，UDP引擎不用区分客户端和服务端，或者说，无论是客户端还是服务端，都可以使用IUdpEngine。注意：IUdpEngine也从INetworkEngine继承，所以，它具备了StriveEngine中基础引擎所有的功能。 
+
+
+
+四.如何使用StriveEngine
+
+在StriveEngine中，我们不能直接new某个通信引擎的class来获得其实例。StriveEngine提供了NetworkEngineFactory，我们可以通过工厂的静态方法来得到通信引擎实例的引用。
+
+1.通信引擎工厂
+    /// <summary>
+    /// 通信引擎工厂。
+    /// </summary>
+    public static class NetworkEngineFactory
+    {        
+        /// <summary>
+        /// 创建使用二进制协议的TCP服务端引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
+        /// </summary>
+        /// <param name="port">服务端引擎监听的端口号</param>
+        /// <param name="helper">二进制协议助手接口</param>        
+        public static ITcpServerEngine CreateStreamTcpServerEngine(int port, IStreamContractHelper helper);        
+        
+        /// <summary>
+        /// 创建使用文本协议的TCP服务端引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
+        /// 注意：返回的引擎实例，可以强转为ITextEngine接口。
+        /// </summary>
+        /// <param name="port">服务端引擎监听的端口号</param>
+        /// <param name="helper">文本协议助手接口</param>  
+        public static ITcpServerEngine CreateTextTcpServerEngine(int port, ITextContractHelper helper);       
+       
+        /// <summary>
+        /// 创建使用二进制协议的TCP客户端引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
+        /// </summary>        
+        /// <param name="serverIP">要连接的服务器的IP</param> 
+        /// <param name="serverPort">要连接的服务器的端口</param> 
+        /// <param name="helper">二进制协议助手接口</param>        
+        public static ITcpPassiveEngine CreateStreamTcpPassivEngine(string serverIP, int serverPort, IStreamContractHelper helper);    
+               
+        /// <summary>
+        /// 创建使用文本协议的TCP客户端引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
+        /// 注意：返回的引擎实例，可以强转为ITextEngine接口。
+        /// </summary>
+        /// <param name="serverIP">要连接的服务器的IP</param> 
+        /// <param name="serverPort">要连接的服务器的端口</param> 
+        /// <param name="helper">文本协议助手接口</param>  
+        public static ITcpPassiveEngine CreateTextTcpPassiveEngine(string serverIP, int serverPort, ITextContractHelper helper);
+        
+        /// <summary>
+        /// 创建UDP引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
+        /// </summary>       
+        public static IUdpEngine CreateUdpEngine();
+    }
+我们可以根据项目的需要（是TCP还是UDP、是文本协议还是二进制协议、是用于客户端还是用于服务端），来调用NetworkEngineFactory的对应方法获得正确的通信引擎实例。
+
+注意：NetworkEngineFactory创建的所有通信引擎实例，必须要调用其Initialize方法后，引擎才算正常启动。当然，在调用Initialize之前，可以根据需要设置其相关的属性。
+
+2.ContractHelper
+
+StriveEngine内部通过ContractHelper来从接收的网络流中识别完整的消息，针对消息格式为文本和二进制，ContractHelper就划分为对应的ITextContractHelper 和IStreamContractHelper。我们看到，在通过NetworkEngineFactory创建通信引擎实例时，其有个参数是必须传入ContractHelper引用的。所以，在项目中，我们必须实现ITextContractHelper或者是IStreamContractHelper。
+
+（1） ITextContractHelper  
+
+    /// <summary>
+    /// 文本协议助手接口。
+    /// </summary>
+    public interface ITextContractHelper 
+    {
+        /// <summary>
+        /// 消息的结束标识符（经过编码后得到的字节数组）。
+        /// </summary>
+        byte[] EndToken { get; }     
+    }
+
+（2）IStreamContractHelper 
+    /// <summary>
+    /// 二进制协议助手接口。
+    /// </summary>
+    public interface IStreamContractHelper
+    {
+        /// <summary>
+        /// 从消息头中解析出消息体的长度。
+        /// </summary>
+        /// <param name="head">完整的消息头，长度固定为MessageHeaderLength</param>
+        /// <returns>消息体的长度</returns>
+        int ParseMessageBodyLength(byte[] head);
+ 
+        /// <summary>
+        /// 消息头的长度。
+        /// </summary>
+        int MessageHeaderLength { get; }
+    }
+
+当使用二进制协议时，通常，消息分为消息头（Header）和消息体（Body）两部分，消息头是必须的，而消息体可以为null。消息头的长度是固定的（比如8个字节），且其至少包含了一个字段--消息体的长度（或根据消息头的内容可以间接结算出消息体的长度）。
+
+3.使用StriveEngine的步骤
+
+（1）实现ITextContractHelper或者是IStreamContractHelper接口（如何实现该接口，可参考后面demo的源码）。
+
+（2）调用NetworkEngineFactory的创建引擎的方法，得到正确的通信引擎实例。
+
+（3）根据需要，设置引擎实例的某些属性（如MaxMessageSize属性）。
+
+（4）根据需要，预定引擎实例的某些事件（如MessageReceived事件）。
+
+（5）调用引擎实例的Initialize方法启动通信引擎。 
+

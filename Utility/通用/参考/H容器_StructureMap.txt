@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using StructureMap;
+
+namespace Utility.通用
+{
+    public static class H容器_StructureMap
+    {
+        public static void 注入<T, T1>(bool __单实例 = false, string __名称 = null) where T1 : T
+        {
+            ObjectFactory.Configure(x =>
+            {
+                if (__单实例)
+                {
+                    if (string.IsNullOrEmpty(__名称))
+                    {
+                        x.For<T>().Singleton().Use<T1>();
+                    }
+                    else
+                    {
+                        x.For<T>().Singleton().Use<T1>().Named(__名称);
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(__名称))
+                    {
+                        x.For<T>().Use<T1>();
+                    }
+                    else
+                    {
+                        x.For<T>().Use<T1>().Named(__名称);
+                    }
+                }
+            });
+
+        }
+
+        public static void 注入<T>(T __实现, string __名称 = null)
+        {
+            ObjectFactory.Configure(x =>
+            {
+                if (string.IsNullOrEmpty(__名称))
+                {
+                    x.For<T>().Use(__实现);
+                }
+                else
+                {
+                    x.For<T>().Use(__实现).Named(__名称);
+                }
+            });
+        }
+
+        public static void 注入同实现的多接口<T, T1>()
+            where T : class
+            where T1 : class
+        {
+            ObjectFactory.Configure(x => x.Redirect<T, T1>());
+        }
+
+        public static T 取出<T>(string __名称 = null)
+        {
+            if (string.IsNullOrEmpty(__名称))
+            {
+                return ObjectFactory.GetInstance<T>();
+            }
+            else
+            {
+                return ObjectFactory.GetNamedInstance<T>(__名称);
+            }
+
+        }
+
+        public static string 获取调试信息()
+        {
+            var what = ObjectFactory.WhatDoIHave();
+            Debug.WriteLine(what);
+            return what;
+        }
+
+    }
+}

@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Ionic.Zip;
+
+namespace Utility.存储
+{
+    /// <summary>
+    /// ZIP格式压缩解压缩
+    /// </summary>
+    public static class HZIP
+    {
+        public static void 压缩(string __输出路径, List<string> __待压缩路径列表, List<string> __待压缩文件列表, string __压缩密码 = null, string __压缩备注 = null)
+        {
+            //创建压缩文件 
+            using (var __ZIP = new ZipFile(Encoding.Default))
+            {
+                //设置密码,也可以为每个文件单独设置密码 
+                __ZIP.Password = __压缩密码;
+
+                //添加文件 
+                if (__待压缩文件列表 != null)
+                {
+                    __ZIP.AddFiles(__待压缩文件列表);
+                }
+
+                //添加目录 
+                if (__待压缩路径列表 != null)
+                {
+                    __待压缩路径列表.ForEach(q => __ZIP.AddDirectory(q));
+
+                }
+
+                //设置备注信息
+                __ZIP.Comment = __压缩备注;
+
+                //还可以设置压缩方式，编码等
+
+                //保存文件
+                __ZIP.Save(__输出路径);
+            }
+
+        }
+
+        public static void 解压(string __待解压路径, string __输出路径, string __解压密码 = null)
+        {
+            //解压文件
+            using (ZipFile zip = ZipFile.Read(__待解压路径))
+            {
+                //遍历zip文件中每一个文件对象，然后解压到指定目录
+                foreach (ZipEntry e in zip)
+                {
+                    if (__解压密码 == null)
+                    {
+                        e.Extract(__输出路径, ExtractExistingFileAction.OverwriteSilently);
+                    }
+                    else
+                    {
+                        e.ExtractWithPassword(__输出路径, __解压密码);
+                    }
+                }
+                //也可以通过索引访问文件对象
+                //ZipEntry e = zip["MyReport.doc"];
+            }
+        }
+
+    }
+
+}

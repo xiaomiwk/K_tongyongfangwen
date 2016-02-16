@@ -1,0 +1,213 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Diagnostics;
+
+namespace Utility.通用
+{
+    //[assembly: log4net.Config.XmlConfigurator(Watch = true, ConfigFile = "log4net.config", ConfigFileExtension = "config")]
+    public static class H调试
+    {
+        private static readonly log4net.ILog _ILog = log4net.LogManager.GetLogger("k");
+
+        static readonly Dictionary<string, object> _全局上下文 = new Dictionary<string, object>();
+
+        static readonly string _行分割 = Environment.NewLine;
+
+        static bool _输出帧 = true;
+
+        /// <summary>
+        /// string 类型, object 消息, IDictionary(string, object) 参数, TraceEventType 跟踪类型, int EventId
+        /// </summary>
+        public static event Action<string, string, TraceEventType, int> 输出通知;
+
+        public static void 触发输出通知(string 标题, string 内容, TraceEventType 等级, int 跟踪标记)
+        {
+            Action<string, string, TraceEventType, int> handler = 输出通知;
+            if (handler != null) handler(标题, 内容, 等级, 跟踪标记);
+        }
+
+        public static void 设置全局上下文(string key, object value)
+        {
+            _全局上下文[key] = value;
+            记录("全局上下文", "设置", new Dictionary<string, object>
+                                       {
+                                           { key, value }
+                                       });
+        }
+
+        public static void 删除全局上下文(string key)
+        {
+            if (_全局上下文.ContainsKey(key))
+            {
+                _全局上下文.Remove(key);
+                记录("全局上下文", "删除" + key);
+            }
+        }
+
+        public static void 刷新全局上下文()
+        {
+            记录("全局上下文", "刷新", _全局上下文);
+        }
+
+        public static Dictionary<string, object> 查询全局上下文()
+        {
+            return _全局上下文;
+        }
+
+        public static void 记录(string 标题, object 内容 = null, Dictionary<string, object> 参数 = null, TraceEventType 等级 = TraceEventType.Verbose)
+        {
+            输出(标题, 内容, 参数, 等级, 0);
+        }
+
+        public static void 记录边界交互(string 标题, object 内容 = null, Dictionary<string, object> 参数 = null)
+        {
+            输出(标题, 内容, 参数, TraceEventType.Information, 0);
+        }
+
+        public static void 记录(bool 条件, string 标题, object 内容 = null, Dictionary<string, object> 参数 = null, TraceEventType 等级 = TraceEventType.Verbose)
+        {
+            if (条件)
+            {
+                输出(标题, 内容, 参数, 等级, 0);
+            }
+        }
+
+        public static void 记录异常(string 类型, Exception 异常, Dictionary<string, object> 参数 = null, TraceEventType 等级 = TraceEventType.Error)
+        {
+            string 消息 = 获取异常描述(异常);
+            记录(类型, 消息, 参数, 等级);
+        }
+
+        public static H跟踪 跟踪(E跟踪周期 跟踪周期, string 标题, object 内容 = null, Dictionary<string, object> 参数 = null, TraceEventType 等级 = TraceEventType.Information)
+        {
+            return new H跟踪(跟踪周期, 标题, 内容, 参数, 等级);
+        }
+
+        public static H跟踪 跟踪(string 标题, object 内容 = null, Dictionary<string, object> 参数 = null, TraceEventType 等级 = TraceEventType.Information)
+        {
+            return new H跟踪(标题, 内容, 参数, 等级);
+        }
+
+        public static string 获取对象状态描述(string 类型, Dictionary<string, object> 状态字典)
+        {
+            var __描述 = new StringBuilder();
+            __描述.AppendFormat("({0}){{", 类型);
+            foreach (var kv in 状态字典)
+            {
+                __描述.AppendFormat("{0}-{1}; ", kv.Key, kv.Value);
+            }
+            __描述.Append("}");
+            return __描述.ToString();
+        }
+
+        internal static void 记录(string 标题, object 内容, Dictionary<string, object> 参数, TraceEventType 等级, int 跟踪标记)
+        {
+            输出(标题, 内容, 参数, 等级, 跟踪标记);
+        }
+
+        internal static string 获取异常描述(Exception e)
+        {
+            var __描述 = new StringBuilder();
+            __描述.AppendFormat("描述:\t{0}", e.Message).Append(_行分割);
+            __描述.AppendFormat("类型:\t{0}", e.GetType().FullName).Append(_行分割);
+            __描述.Append(e.StackTrace).Append(_行分割);
+            var __内部异常 = e.InnerException;
+            if (__内部异常 != null && __内部异常 != e)
+            {
+                __描述.Append(_行分割).Append("------------内部异常------------").Append(_行分割).Append(获取异常描述(__内部异常));
+            }
+            return __描述.ToString();
+        }
+
+        private static void 输出(string 标题, object 内容, Dictionary<string, object> 参数, TraceEventType 等级, int 跟踪标记)
+        {
+            //格式过滤
+            标题 = 字符串过滤(标题);
+            var __消息描述 = 字符串过滤(内容);
+            var __参数描述 = new StringBuilder();
+            if (参数 != null)
+            {
+                foreach (var kv in 参数)
+                {
+                    __参数描述.AppendFormat("{0} : {1};{2}", kv.Key, kv.Value, Environment.NewLine);
+                }
+            }
+
+            //附加帧信息
+            var __行号 = string.Empty;
+            var __方法 = string.Empty;
+            var __类型 = string.Empty;
+            var __文件 = string.Empty;
+            if (_输出帧)
+            {
+                try
+                {
+                    var __帧栈 = new StackTrace(true).GetFrames();
+                    if (__帧栈 != null)
+                    {
+                        var __index = 0;
+                        for (int i = 0; i < __帧栈.Length; i++)
+                        {
+                            var __temp = __帧栈[i].GetFileName();
+                            if (!__temp.EndsWith("H调试.cs") && !__temp.EndsWith("H跟踪.cs"))
+                            {
+                                __index = i;
+                                break;
+                            }
+                        }
+                        __行号 = __帧栈[__index].GetFileLineNumber().ToString();
+                        __方法 = __帧栈[__index].GetMethod().ToString();
+                        __类型 = __帧栈[__index].GetMethod().DeclaringType.Name;
+                        __文件 = __帧栈[__index].GetFileName();
+                    }
+                }
+                catch
+                {
+                    _输出帧 = false;
+                }
+            }
+
+            //log4net输出
+            log4net.ThreadContext.Properties["DateTime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.FFF");
+            log4net.ThreadContext.Properties["TraceEventType"] = 等级;
+            log4net.ThreadContext.Properties["TraceId"] = 跟踪标记;
+            log4net.ThreadContext.Properties["Title"] = 标题;
+            log4net.ThreadContext.Properties["Extend"] = 字符串过滤(__参数描述);
+            log4net.ThreadContext.Properties["Line"] = __行号;
+            log4net.ThreadContext.Properties["Method"] = __方法;
+            log4net.ThreadContext.Properties["File"] = __文件;
+            log4net.ThreadContext.Properties["Type"] = __类型;
+
+            switch (等级)
+            {
+                case TraceEventType.Critical:
+                    _ILog.Fatal(__消息描述);
+                    break;
+                case TraceEventType.Error:
+                    _ILog.Error(__消息描述);
+                    break;
+                case TraceEventType.Warning:
+                    _ILog.Warn(__消息描述);
+                    break;
+                default:
+                    _ILog.Info(__消息描述);
+                    break;
+            }
+
+            触发输出通知(标题, __消息描述 + __行号, 等级, 跟踪标记);
+        }
+
+        private static string 字符串过滤(object __源)
+        {
+            if (__源 != null)
+            {
+                return __源.ToString().Replace("||", "").Replace(Environment.NewLine, "<br/>").Replace("\n", "").Replace("\r", "");
+            }
+            return string.Empty;
+        }
+
+
+    }
+}
