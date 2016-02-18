@@ -42,15 +42,6 @@ namespace INET.传输
 
         bool 信道忙(IPEndPoint __客户端节点);
 
-        /// <summary>
-        /// 给某个客户端同步发信息。注意：如果引擎已经停止或客户端不在线，则直接返回。   
-        /// </summary>
-        void 同步发送(IPEndPoint __客户端节点, byte[] __消息, E信道忙时处理方法 __处理方法);
-
-        /// <summary>
-        /// 给某个客户端异步发信息。注意：如果引擎已经停止或客户端不在线，则直接返回。   
-        /// </summary>
-        void 异步发送(IPEndPoint __客户端节点, byte[] __消息, E信道忙时处理方法 __处理方法);
 
         event Action<IPEndPoint> 客户端已断开;
 

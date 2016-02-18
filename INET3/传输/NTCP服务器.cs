@@ -367,17 +367,7 @@ namespace INET.传输
             }
         }
 
-        public void 同步发送(IPEndPoint __客户端节点, byte[] __消息, E信道忙时处理方法 __处理方法)
-        {
-            throw new NotImplementedException();
-        }
-
         public void 异步发送(IPEndPoint __客户端节点, byte[] __消息)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void 异步发送(IPEndPoint __客户端节点, byte[] __消息, E信道忙时处理方法 __处理方法)
         {
             throw new NotImplementedException();
         }

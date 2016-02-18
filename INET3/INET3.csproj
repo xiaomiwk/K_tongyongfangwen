@@ -67,7 +67,6 @@
     <Compile Include="传输\N消息头分割.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="传输\Sock5ProxyInfo.cs" />
     <Compile Include="传输\NTCP客户端.cs" />
     <Compile Include="传输\NTCP服务器.cs" />
     <Compile Include="传输\NUDP.cs" />

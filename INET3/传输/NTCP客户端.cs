@@ -24,8 +24,6 @@ namespace INET.传输
 
         public IPEndPoint 本机地址 { get; set; }
 
-        public Sock5ProxyInfo Sock5代理服务器 { get; set; }
-
         public E传输层协议 协议 { get { return E传输层协议.TCP; } }
 
         public E流分割方式 分割方式 { get; private set; }
@@ -67,7 +65,7 @@ namespace INET.传输
             this.最大消息长度 = 5000;
             this.发送缓冲区大小 = 8192;
             this.接收缓冲区大小 = 8192;
-            this.自动重连最大次数 = int.MaxValue;
+            this.自动重连重试间隔秒数 = 10;
         }
 
         void _IN消息分割_分割了报文(IPEndPoint __客户端节点, byte[] __消息)
@@ -94,9 +92,8 @@ namespace INET.传输
             }
             catch (Exception ex)
             {
-                H日志输出.记录(ex);
+                H日志输出.记录(ex.Message);
                 断开();
-                //throw new ApplicationException(名称 + string.Format(" 连接服务器 [{0}] 失败", 服务器地址));
             }
             if (连接正常)
             {
@@ -181,11 +178,9 @@ namespace INET.传输
 
         private void 执行自动重连()
         {
-            var __重试间隔毫秒 = 5000;
             var __检测间隔毫秒 = 5000;
             while (自动重连)
             {
-                Thread.Sleep(__重试间隔毫秒);
                 while (连接正常)
                 {
                     Thread.Sleep(__检测间隔毫秒);
@@ -194,30 +189,17 @@ namespace INET.传输
                 {
                     break;
                 }
-                On自动重连开始();
-                for (int i = 0; i < 自动重连最大次数; i++)
-                {
-                    try
-                    {
-                        if (Disposed)
-                        {
-                            return;
-                        }
-                        if (连接正常)
-                        {
-                            break;
-                        }
-                        开启();
-                        break;
-                    }
-                    catch (Exception)
-                    {
-                        Thread.Sleep(__重试间隔毫秒);
-                    }
-                }
+                H日志输出.记录(名称 + ": 开始自动重连");
+                On开始自动重连();
+                开启();
                 if (!连接正常)
                 {
-                    On自动重连失败();
+                    H日志输出.记录(名称 + ": 自动重连失败");
+                    Thread.Sleep(this.自动重连重试间隔秒数 * 1000);
+                }
+                else
+                {
+                    H日志输出.记录(名称 + ": 自动重连成功");
                 }
             }
             _已开启重连 = false;
@@ -233,11 +215,11 @@ namespace INET.传输
 
         public void 断开()
         {
-            H日志输出.记录(名称 + ": 断开", null, TraceEventType.Information);
             if (!连接正常)
             {
                 return;
             }
+            H日志输出.记录(名称 + ": 断开", null, TraceEventType.Information);
             连接正常 = false;
             if (_连接 != null)
             {
@@ -261,27 +243,17 @@ namespace INET.传输
 
         public bool 自动重连 { get; set; }
 
-        public int 自动重连最大次数 { get; set; }
+        public int 自动重连重试间隔秒数 { get; set; }
 
         public event Action 自动重连开始;
 
-        protected virtual void On自动重连开始()
+        protected virtual void On开始自动重连()
         {
-            H日志输出.记录(名称 + ": 自动重连开始");
             var handler = 自动重连开始;
             if (handler != null) handler();
         }
 
-        public event Action 自动重连失败;
-
-        protected virtual void On自动重连失败()
-        {
-            H日志输出.记录(名称 + ": 自动重连失败");
-            var handler = 自动重连失败;
-            if (handler != null) handler();
-        }
-
-        public void 手动重连(int __重试次数, int __重试间隔毫秒)
+        public void 手动重连(int __重试次数, int __重试间隔秒数)
         {
             for (int i = 0; i < __重试次数; i++)
             {
@@ -296,22 +268,19 @@ namespace INET.传输
                         break;
                     }
                     开启();
-                    break;
                 }
                 catch (Exception)
                 {
-                    Thread.Sleep(__重试间隔毫秒);
+                    Thread.Sleep(__重试间隔秒数 * 1000);
                 }
             }
         }
-
-        public bool 信道忙 { get; private set; }
 
         public void 同步发送(byte[] __消息)
         {
             if (_连接 == null || _连接.Client == null || !_连接.Connected)
             {
-                throw new ApplicationException("连接未初始化或已断开,无法发送");
+                return;
             }
             H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
             try
@@ -321,24 +290,43 @@ namespace INET.传输
             }
             catch
             {
-                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址), BitConverter.ToString(__消息));
-                throw new ApplicationException("连接已断开,无法发送");
+                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址));
+                throw new ApplicationException("发送失败");
             }
-        }
-
-        public void 同步发送(byte[] __消息, E信道忙时处理方法 __处理方法)
-        {
-            throw new NotImplementedException();
         }
 
         public void 异步发送(byte[] __消息)
         {
-            throw new NotImplementedException();
+            if (_连接 == null || _连接.Client == null || !_连接.Connected)
+            {
+                return;
+            }
+            H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
+            try
+            {
+                _数据流.BeginWrite(__消息, 0, __消息.Length, 异步发送完成, __消息);
+            }
+            catch
+            {
+                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址));
+                throw new ApplicationException("发送失败");
+            }
         }
 
-        public void 异步发送(byte[] __消息, E信道忙时处理方法 __处理方法)
+        private void 异步发送完成(IAsyncResult __ar)
         {
-            throw new NotImplementedException();
+            var __消息 = __ar.AsyncState as byte[];
+            try
+            {
+                _数据流.EndWrite(__ar);
+                On发送成功(服务器地址, __消息);
+            }
+            catch
+            {
+                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址));
+                throw new ApplicationException("发送失败");
+            }
+
         }
 
         public event Action<IPEndPoint, byte[]> 收到消息;
@@ -380,5 +368,6 @@ namespace INET.传输
         {
             this.异步发送(__消息);
         }
+
     }
 }
