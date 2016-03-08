@@ -65,7 +65,7 @@
 
 `
 
-**客户端示例**
+**通用工具**
 ![image](https://github.com/xiaomiwk/K_tongyongfangwen/blob/master/2.png?raw=true)
 `
 
