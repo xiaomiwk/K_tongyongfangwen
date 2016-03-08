@@ -67,9 +67,10 @@
 
 **通用工具**
 ![image](https://github.com/xiaomiwk/K_tongyongfangwen/blob/master/2.png?raw=true)
-`
+
 
 **客户端示例**
+`
             _IT客户端 = FT通用访问工厂.创建客户端();
             _IT客户端.连接(_地址);
                 
