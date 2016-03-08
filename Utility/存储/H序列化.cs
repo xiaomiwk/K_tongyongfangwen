@@ -137,10 +137,6 @@ namespace Utility.存储
             return new JavaScriptSerializer().Deserialize<T>(字符串);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="__列表"></param>
         /// <returns>x,x-x,x</returns>
         public static string 单值列表转字符串(List<int> __列表)
         {
@@ -162,6 +158,34 @@ namespace Utility.存储
                 __描述.Remove(__描述.Length - 1, 1);
             }
             return __描述.ToString();
+        }
+
+        /// <param name="__字符串">x,x-x,x</param>
+        public static List<int> 字符串转单值列表(string __字符串)
+        {
+            if (string.IsNullOrEmpty(__字符串))
+            {
+                return new List<int>();
+            }
+            __字符串 = __字符串.Replace(" ", "");
+            var __结果 = new List<int>();
+            var __列表 =__字符串.Split(new char[] { ','}, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < __列表.Length; i++)
+            {
+                var __分段 = __列表[i].Split(new char[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
+                if (__分段.Length == 1)
+                {
+                    __结果.Add(int.Parse(__分段[0]));
+                    continue;
+                }
+                var __起始 = int.Parse(__分段[0]);
+                var __终止 = int.Parse(__分段[1]);
+                for (int j = __起始; j <= __终止; j++)
+                {
+                    __结果.Add(j);
+                }
+            }
+            return __结果;
         }
 
         public static List<Tuple<int, int>> 单值列表转段列表(List<int> __号码列表)

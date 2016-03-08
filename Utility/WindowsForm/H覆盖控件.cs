@@ -19,12 +19,15 @@ namespace Utility.WindowsForm
         public static void 创建全覆盖控件<T>(this Control 初始控件, T 覆盖控件, Action<T> 处理覆盖控件操作完毕)
             where T : Control, I覆盖控件
         {
+            覆盖控件.Width = 初始控件.Width;
+            覆盖控件.Height = 初始控件.Height;
             初始控件.Parent.Controls.Add(覆盖控件);
-            覆盖控件.Dock = DockStyle.Fill;
+            覆盖控件.Left = 初始控件.Left;
+            覆盖控件.Top = 初始控件.Top;
+            覆盖控件.Anchor = 初始控件.Anchor;
             //初始控件.Parent.Controls.SetChildIndex(覆盖控件, 0);
             覆盖控件.BringToFront();
             覆盖控件.Focus();
-            初始控件.Visible = false;
             覆盖控件.已隐藏 += () =>
             {
                 //H调试.记录("创建全覆盖控件", "覆盖控件.Visible = " + 覆盖控件.Visible + " 覆盖控件.Created = " + 覆盖控件.Created);
@@ -36,13 +39,12 @@ namespace Utility.WindowsForm
                 {
                     初始控件.Parent.Controls.Remove(覆盖控件);
                 }
-                初始控件.Visible = true;
                 if (覆盖控件.Created)
                 {
                     覆盖控件.Dispose();
                 }
             };
-            //Application.DoEvents();
+            Application.DoEvents();
         }
 
         public static void 创建局部覆盖控件<T>(this Control 初始控件, T 覆盖控件, Action<T> 处理覆盖控件操作完毕)
@@ -56,8 +58,8 @@ namespace Utility.WindowsForm
         public static void 创建局部覆盖控件<T>(this Control 初始控件, T 覆盖控件, Action<T> 处理覆盖控件操作完毕, int X, int Y)
             where T : Control, I覆盖控件
         {
-            覆盖控件.Location = new Point(X, Y);
             初始控件.Parent.Controls.Add(覆盖控件);
+            覆盖控件.Location = new Point(X, Y);
             //初始控件.Parent.Controls.SetChildIndex(覆盖控件, 0);
             覆盖控件.BringToFront();
             覆盖控件.Focus();
@@ -79,7 +81,7 @@ namespace Utility.WindowsForm
                     覆盖控件.Dispose();
                 }
             };
-            //Application.DoEvents();
+            Application.DoEvents();
         }
 
     }

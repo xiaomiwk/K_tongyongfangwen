@@ -63,7 +63,8 @@ namespace 通用访问.客户端
             _IN网络节点.已连接 += () =>
             {
                 连接正常 = true;
-                On已连接();
+
+                Task.Factory.StartNew(On已连接);
 
                 Task.Factory.StartNew(() =>
                 {

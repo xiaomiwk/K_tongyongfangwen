@@ -26,7 +26,14 @@ namespace Utility.WindowsForm
             if (this.Text == "")
             {
                 this.Text = 水印;
+            }
+            if (this.Text == 水印)
+            {
                 this.ForeColor = 水印颜色;
+            }
+            else
+            {
+                this.ForeColor = DefaultForeColor;
             }
         }
 

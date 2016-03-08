@@ -297,36 +297,7 @@ namespace INET.传输
 
         public void 异步发送(byte[] __消息)
         {
-            if (_连接 == null || _连接.Client == null || !_连接.Connected)
-            {
-                return;
-            }
-            H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
-            try
-            {
-                _数据流.BeginWrite(__消息, 0, __消息.Length, 异步发送完成, __消息);
-            }
-            catch
-            {
-                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址));
-                throw new ApplicationException("发送失败");
-            }
-        }
-
-        private void 异步发送完成(IAsyncResult __ar)
-        {
-            var __消息 = __ar.AsyncState as byte[];
-            try
-            {
-                _数据流.EndWrite(__ar);
-                On发送成功(服务器地址, __消息);
-            }
-            catch
-            {
-                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址));
-                throw new ApplicationException("发送失败");
-            }
-
+            throw new NotImplementedException();
         }
 
         public event Action<IPEndPoint, byte[]> 收到消息;

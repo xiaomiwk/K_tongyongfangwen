@@ -65,6 +65,29 @@ namespace Utility.WindowsForm
             set { this.out标题.Text = value; }
         }
 
+        public bool 无背景图片 {
+            get { return this.BackgroundImageLayout == ImageLayout.None; }
+            set
+            {
+                if (value)
+                {
+                    this.BackgroundImageLayout = ImageLayout.None;
+                    this.do设置.BackgroundImageLayout = ImageLayout.None;
+                    this.do最小化.BackgroundImageLayout = ImageLayout.None;
+                    this.do最大化.BackgroundImageLayout = ImageLayout.None;
+                    this.do关闭.BackgroundImageLayout = ImageLayout.None;
+                }
+                else
+                {
+                    this.BackgroundImageLayout = ImageLayout.Stretch;
+                    this.do设置.BackgroundImageLayout = ImageLayout.Tile;
+                    this.do最小化.BackgroundImageLayout = ImageLayout.Tile;
+                    this.do最大化.BackgroundImageLayout = ImageLayout.Tile;
+                    this.do关闭.BackgroundImageLayout = ImageLayout.Tile;
+                }
+            }
+        }
+
         public U窗体头()
         {
             InitializeComponent();

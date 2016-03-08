@@ -74,11 +74,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>..\LIB\Microsoft.Practices.Unity.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\资源\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Interception">
-      <HintPath>..\LIB\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.1.505.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\资源\Microsoft.Practices.Unity.Interception.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
@@ -104,10 +106,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WindowsForm\MetroButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WindowsForm\MetroMessageBox.cs" />
+    <Compile Include="WindowsForm\MetroMessageBoxControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WindowsForm\MetroMessageBoxControl.Designer.cs">
+      <DependentUpon>MetroMessageBoxControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WindowsForm\MetroMessageBoxProperties.cs" />
+    <Compile Include="WindowsForm\ProgressBarK.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WindowsForm\ProgressSpinner.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WindowsForm\TextBoxK.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="WindowsForm\DataGridViewK.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WindowsForm\TrackBarK.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WindowsForm\TreeViewK.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="WindowsForm\UserControlK.cs">
@@ -230,12 +255,6 @@
     <Compile Include="任务\H顺序调度.cs" />
     <Compile Include="任务\H限时执行.cs" />
     <Compile Include="WindowsForm\H窗口API.cs" />
-    <Compile Include="WindowsForm\U等待.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WindowsForm\U等待.Designer.cs">
-      <DependentUpon>U等待.cs</DependentUpon>
-    </Compile>
     <Compile Include="WindowsForm\U容器.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -329,6 +348,9 @@
     <EmbeddedResource Include="WindowsForm\F调试窗口.resx">
       <DependentUpon>F调试窗口.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="WindowsForm\MetroMessageBoxControl.resx">
+      <DependentUpon>MetroMessageBoxControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WindowsForm\U分页.resx">
       <DependentUpon>U分页.cs</DependentUpon>
     </EmbeddedResource>
@@ -349,9 +371,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="WindowsForm\U窗口背景.resx">
       <DependentUpon>U窗口背景.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WindowsForm\U等待.resx">
-      <DependentUpon>U等待.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

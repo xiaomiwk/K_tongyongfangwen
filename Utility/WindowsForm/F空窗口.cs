@@ -49,7 +49,7 @@ namespace Utility.WindowsForm
             this.u窗体头1.点击设置 += On点击设置;
         }
 
-        public event Action 点击设置;
+        public Action 点击设置;
 
         protected virtual void On点击设置()
         {

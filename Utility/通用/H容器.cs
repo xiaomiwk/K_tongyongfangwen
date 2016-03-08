@@ -75,7 +75,6 @@ namespace Utility.通用
 
         public static T 取出<T>(string __名称 = "")
         {
-            _容器.IsRegistered<T>();
             return _容器.Resolve<T>(__名称);
         }
 

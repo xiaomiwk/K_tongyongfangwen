@@ -30,70 +30,77 @@ namespace Utility.WindowsForm
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.out提示 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.out提示 = new System.Windows.Forms.TextBox();
             this.do取消 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel1.Controls.Add(this.panel2);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(2, 2);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(1);
-            this.panel1.Size = new System.Drawing.Size(187, 67);
+            this.panel1.Size = new System.Drawing.Size(207, 80);
             this.panel1.TabIndex = 0;
             // 
             // panel2
             // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.panel2.Controls.Add(this.do取消);
             this.panel2.Controls.Add(this.out提示);
+            this.panel2.Controls.Add(this.do取消);
             this.panel2.Controls.Add(this.label1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(1, 1);
             this.panel2.Margin = new System.Windows.Forms.Padding(0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(185, 65);
+            this.panel2.Size = new System.Drawing.Size(205, 78);
             this.panel2.TabIndex = 1;
             // 
             // out提示
             // 
-            this.out提示.AutoSize = true;
-            this.out提示.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.out提示.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.out提示.Location = new System.Drawing.Point(16, 38);
+            this.out提示.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.out提示.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.out提示.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.out提示.Location = new System.Drawing.Point(24, 43);
+            this.out提示.Multiline = true;
             this.out提示.Name = "out提示";
-            this.out提示.Size = new System.Drawing.Size(32, 17);
-            this.out提示.TabIndex = 3;
-            this.out提示.Text = "内容";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label1.Location = new System.Drawing.Point(16, 12);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(129, 17);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "正在处理中, 请等待......";
+            this.out提示.ReadOnly = true;
+            this.out提示.Size = new System.Drawing.Size(159, 21);
+            this.out提示.TabIndex = 5;
+            this.out提示.TabStop = false;
             // 
             // do取消
             // 
             this.do取消.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.do取消.FlatAppearance.BorderSize = 0;
             this.do取消.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.do取消.Location = new System.Drawing.Point(161, 2);
+            this.do取消.Location = new System.Drawing.Point(181, 2);
             this.do取消.Name = "do取消";
             this.do取消.Size = new System.Drawing.Size(21, 21);
             this.do取消.TabIndex = 4;
             this.do取消.Text = "X";
             this.do取消.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label1.Location = new System.Drawing.Point(21, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(129, 17);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "正在处理中, 请等待......";
             // 
             // F等待
             // 
@@ -105,7 +112,7 @@ namespace Utility.WindowsForm
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "F等待";
             this.Padding = new System.Windows.Forms.Padding(2);
-            this.Size = new System.Drawing.Size(191, 71);
+            this.Size = new System.Drawing.Size(211, 84);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -117,9 +124,9 @@ namespace Utility.WindowsForm
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        public System.Windows.Forms.Label out提示;
         public System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button do取消;
+        private System.Windows.Forms.TextBox out提示;
 
     }
 }
