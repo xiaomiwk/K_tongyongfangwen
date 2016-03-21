@@ -54,5 +54,29 @@ namespace Utility.扩展
             }
             return __所有实例;
         }
+
+        public static T 获取实例<T>(string __文件路径)
+        {
+            try
+            {
+                var __程序集 = Assembly.LoadFrom(__文件路径);
+                //检查每个公开导出的类型
+                foreach (Type __类型 in __程序集.GetExportedTypes())
+                {
+                    //如果类型是实现了插件接口的类，那么类型就对宿主可用
+                    if (__类型.IsClass && typeof(T).IsAssignableFrom(__类型))
+                    {
+                        return (T)Activator.CreateInstance(__类型);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                H日志.记录异常(ex);
+                return default(T);
+            }
+            return default(T);
+        }
+
     }
 }

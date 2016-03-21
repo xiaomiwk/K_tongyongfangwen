@@ -24,8 +24,6 @@ namespace 通用访问
 
         event Action 已连接;
 
-        event Action<M通知> 收到了通知;
-
         M对象列表查询结果 查询可访问对象();
 
         M对象明细查询结果 查询对象明细(string 对象名称);

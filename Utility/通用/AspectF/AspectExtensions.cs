@@ -52,7 +52,10 @@ namespace Utility.通用
                         errors = new List<Exception>();
                     errors.Add(x);
                     logger.LogException(x);
-                    errorHandler(x);
+                    if (errorHandler != null)
+                    {
+                        errorHandler(x);
+                    }
                     System.Threading.Thread.Sleep(retryDuration);
                 }
             } while (retryCount-- > 0);

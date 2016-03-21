@@ -15,12 +15,9 @@ namespace 通用访问
         /// </summary>
         public static Encoding 文本编码 { get; set; }
 
-        public static int 心跳频率 { get; set; }
-
         static FT通用访问工厂()
         {
             文本编码 = Encoding.GetEncoding(936);
-            心跳频率 = 10000;
         }
 
         public static IT服务端 创建服务端()

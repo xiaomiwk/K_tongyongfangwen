@@ -211,10 +211,6 @@ namespace 通用访问工具
                 this.out命令明细容器.添加控件(_当前设备.命令执行控件);
                 this.out命令明细容器.激活控件(_当前设备.命令执行控件);
 
-                _当前设备.访问入口.收到了通知 +=
-                    q =>
-                        _当前设备.命令执行控件.输出(string.Format("\r\n{0}  {1} [{2}] {3} 详细: {4}\r\n",
-                            DateTime.Now.ToLongTimeString(), q.重要性, q.对象, q.概要, q.详细));
                 _当前设备.访问入口.收到了事件 +=
                     q =>
                         _当前设备.命令执行控件.输出(string.Format("\r\n{0}  收到事件: {1}\r\n", DateTime.Now.ToLongTimeString(),

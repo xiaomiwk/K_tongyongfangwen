@@ -7,9 +7,6 @@ using System.Data.Common;
 
 namespace Utility.存储
 {
-    /// <summary>
-    /// 本类为SQLite数据库帮助静态类,使用时只需直接调用即可,无需实例化
-    /// </summary>
     public static class SQLHelper
     {
         public static int ExecuteNonQuery(DbConnection __连接, string __命令内容, DbParameter[] __命令参数 = null, DbTransaction __事务 = null, CommandType __命令类型 = CommandType.Text)

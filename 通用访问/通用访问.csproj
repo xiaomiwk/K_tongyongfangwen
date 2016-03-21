@@ -64,7 +64,6 @@
     <Compile Include="DTO\M对象列表查询请求.cs" />
     <Compile Include="DTO\M对象明细查询请求.cs" />
     <Compile Include="DTO\M订阅事件.cs" />
-    <Compile Include="DTO\M通知.cs" />
     <Compile Include="FT通用访问工厂.cs" />
     <Compile Include="HJSON.cs" />
     <Compile Include="DTO\M子成员.cs" />
@@ -79,7 +78,6 @@
     <Compile Include="IT客户端.cs" />
     <Compile Include="IT服务端.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DTO\M心跳.cs" />
     <Compile Include="服务端\BT服务端.cs" />
     <Compile Include="自定义序列化\M实参Converter.cs" />
     <Compile Include="自定义序列化\M属性值查询结果Converter.cs" />

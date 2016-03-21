@@ -77,7 +77,7 @@ namespace INET.传输
         {
             this.本机地址 = __本机地址;
             this.允许监听 = false;
-            this.最大消息长度 = 5000;
+            this.最大消息长度 = 100000;
             this.发送缓冲区大小 = 8192;
             this.接收缓冲区大小 = 8192;
             允许客户端数量 = 100;
@@ -159,7 +159,7 @@ namespace INET.传输
                 }
                 var __实际接收字节 = new byte[__实际接收长度];
                 Buffer.BlockCopy(__缓存, 0, __实际接收字节, 0, __实际接收长度);
-                H日志输出.记录(名称 + string.Format(": 从 [{0}] 收", __客户端.节点), BitConverter.ToString(__实际接收字节));
+                //H日志输出.记录(名称 + string.Format(": 从 [{0}] 收", __客户端.节点), BitConverter.ToString(__实际接收字节));
                 _IN消息分割.接收数据(__客户端.节点, __实际接收字节);
                 __数据流.BeginRead(__缓存, 0, 接收缓冲区大小, 异步接收数据, new Tuple<NetworkStream, byte[], M客户端>(__数据流, __缓存, __客户端));
             }
@@ -337,27 +337,8 @@ namespace INET.传输
                     var __客户端 = _所有客户端[__客户端节点];
                     __客户端.数据流.Write(__消息, 0, __消息.Length);
 
-                    //var __每包大小 = 发送缓冲区大小;
-                    //if (__消息.Length > __每包大小)
-                    //{
-                    //    lock (__客户端.发送同步锁)
-                    //    {
-                    //        //var __耗时检测 = Stopwatch.StartNew();
-                    //        for (int i = 0; i < __消息.Length; i += __每包大小)
-                    //        {
-                    //            __客户端.数据流.Write(__消息, i, Math.Min(__每包大小, __消息.Length - i));
-                    //        }
-                    //        //__耗时检测.Stop();
-                    //        //H日志输出.记录(string.Format("发送 {0} 个字节时耗时 {1} 毫秒", __消息.Length, __耗时检测.ElapsedMilliseconds));
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    __客户端.数据流.Write(__消息, 0, __消息.Length);
-                    //}
-
                     On发送成功(__客户端节点, __消息);
-                    H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", __客户端节点), BitConverter.ToString(__消息));
+                    //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", __客户端节点), BitConverter.ToString(__消息));
                 }
             }
             catch
@@ -369,7 +350,14 @@ namespace INET.传输
 
         public void 异步发送(IPEndPoint __客户端节点, byte[] __消息)
         {
-            throw new NotImplementedException();
+            if (_所有客户端.ContainsKey(__客户端节点))
+            {
+                var __客户端 = _所有客户端[__客户端节点];
+                __客户端.数据流.BeginWrite(__消息, 0, __消息.Length, null, null);
+
+                On发送成功(__客户端节点, __消息);
+                //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", __客户端节点), BitConverter.ToString(__消息));
+            }
         }
 
         public event Action<IPEndPoint, byte[]> 收到消息;

@@ -18,12 +18,16 @@ namespace 通用访问
             _默认自定义序列化.Add(new IPAddressConverter());
             _默认自定义序列化.Add(new EnumConverter<E角色>());
             _默认自定义序列化.Add(new EnumConverter<E数据结构>());
-            _默认自定义序列化.Add(new EnumConverter<E通知重要性>());
         }
 
         public static string 序列化(object obj, params JsonConverter[] __自定义序列化)
         {
-            var settings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+            return 序列化(obj, true, __自定义序列化);
+        }
+
+        public static string 序列化(object obj, bool __格式化, params JsonConverter[] __自定义序列化)
+        {
+            var settings = new JsonSerializerSettings { Formatting = __格式化 ?  Formatting.Indented : Formatting.None };
             if (__自定义序列化 != null)
             {
                 for (int i = 0; i < __自定义序列化.Length; i++)

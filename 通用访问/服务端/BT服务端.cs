@@ -20,10 +20,6 @@ namespace 通用访问.服务端
 
         private IN上下文 _IN上下文;
 
-        private Dictionary<IPEndPoint, DateTime> _最后心跳时间 = new Dictionary<IPEndPoint, DateTime>();
-
-        private int _心跳频率 = FT通用访问工厂.心跳频率;
-
         private Dictionary<string, Func<M对象>> _所有对象 = new Dictionary<string, Func<M对象>>();
 
         private Dictionary<string, List<IPEndPoint>> _所有事件订阅 = new Dictionary<string, List<IPEndPoint>>();
@@ -42,18 +38,6 @@ namespace 通用访问.服务端
         public void 删除对象(string __对象名称)
         {
             _所有对象.Remove(__对象名称);
-        }
-
-        public void 发送通知(M通知 __通知, IPEndPoint __远端 = null)
-        {
-            if (__远端 == null)
-            {
-                客户端列表.ForEach(q => _IN上下文.发送通知(q, __通知));
-            }
-            else
-            {
-                _IN上下文.发送通知(__远端, __通知);
-            }
         }
 
         public void 开启()
@@ -75,35 +59,6 @@ namespace 通用访问.服务端
                     客户端列表.Add(q);
                 }
                 On客户端已连接(q);
-                发送通知(new M通知 { 对象 = "系统", 概要 = "欢迎进入", 详细 = "", 重要性 = E通知重要性.重要, 角色 = E角色.所有 }, q);
-                Task.Factory.StartNew(() =>
-                {
-                    while (true)
-                    {
-                        try
-                        {
-                            _IN上下文.发送通知(q, new M心跳());
-                            Thread.Sleep(_心跳频率);
-                        }
-                        catch (Exception)
-                        {
-                            break;
-                        }
-                    }
-                });
-                Task.Factory.StartNew(() =>
-                {
-                    _最后心跳时间[q] = DateTime.Now;
-                    while (true)
-                    {
-                        if (_最后心跳时间[q].AddMilliseconds(_心跳频率 * 3) < DateTime.Now)
-                        {
-                            _IN网络节点.断开客户端(q);
-                            break;
-                        }
-                        Thread.Sleep(_心跳频率);
-                    }
-                });
             };
             _IN网络节点.客户端已断开 += q =>
             {
@@ -115,7 +70,6 @@ namespace 通用访问.服务端
             };
 
             _IN上下文.设置发送方法(_IN网络节点.同步发送);
-            _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M心跳)), () => new N被动会话(new Action<N会话参数>(处理心跳)));
             _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M对象列表查询请求)), () => new N被动会话(new Func<N会话参数, bool>(处理查询对象列表)));
             _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M对象明细查询请求)), () => new N被动会话(new Func<N会话参数, bool>(处理查询对象明细)));
             _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M方法执行请求)), () => new N被动会话(new Func<N会话参数, bool>((处理执行方法))));
@@ -123,7 +77,7 @@ namespace 通用访问.服务端
             _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M注销事件)), () => new N被动会话(new Action<N会话参数>((处理取消订阅事件))));
             _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M属性值查询请求)), () => new N被动会话(new Func<N会话参数, bool>((处理查询属性值))));
 
-            _IN网络节点.最大消息长度 = 50000;
+            _IN网络节点.最大消息长度 = 10000000;
             _IN网络节点.开启();
         }
 
@@ -134,11 +88,6 @@ namespace 通用访问.服务端
                 _IN网络节点.断开所有客户端();
                 _IN网络节点.关闭();
             }
-        }
-
-        private void 处理心跳(N会话参数 __会话参数)
-        {
-            _最后心跳时间[__会话参数.远端] = DateTime.Now;
         }
 
         private bool 处理查询对象列表(N会话参数 __会话参数)

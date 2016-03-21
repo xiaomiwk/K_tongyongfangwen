@@ -11,6 +11,16 @@ namespace Utility.WindowsForm
 {
     public partial class F空窗口 : FormK
     {
+        private Control _控件;
+
+        private string _标题;
+
+        public string 标题
+        {
+            get { return this.u窗体头1.标题; }
+            set { this.u窗体头1.标题 = value; this.Text = value; }
+        }
+
         public bool 允许最大化
         {
             get { return this.u窗体头1.显示最大化按钮; }
@@ -40,13 +50,18 @@ namespace Utility.WindowsForm
             InitializeComponent();
             this.Width = __控件.Width + 25;
             this.Height = __控件.Height + 66;
-            __控件.Dock = DockStyle.Fill;
-            this.panel1.Controls.Add(__控件);
-
-            this.u窗体头1.标题 = __标题;
-            this.Text = __标题;
-
+            _控件 = __控件;
+            _标题 = __标题;
             this.u窗体头1.点击设置 += On点击设置;
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            this.u窗体头1.标题 = _标题;
+            this.Text = _标题;
+            _控件.Dock = DockStyle.Fill;
+            this.panel1.Controls.Add(_控件);
         }
 
         public Action 点击设置;

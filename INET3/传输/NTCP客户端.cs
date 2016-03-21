@@ -62,7 +62,7 @@ namespace INET.传输
         {
             this.服务器地址 = __服务器地址;
             this.本机地址 = __本机地址;
-            this.最大消息长度 = 5000;
+            this.最大消息长度 = 100000;
             this.发送缓冲区大小 = 8192;
             this.接收缓冲区大小 = 8192;
             this.自动重连重试间隔秒数 = 10;
@@ -131,7 +131,7 @@ namespace INET.传输
                 }
                 var __实际接收字节 = new byte[__实际接收长度];
                 Buffer.BlockCopy(__缓存, 0, __实际接收字节, 0, __实际接收长度);
-                H日志输出.记录(名称 + string.Format(": 从 [{0}] 收", 服务器地址), BitConverter.ToString(__实际接收字节));
+                //H日志输出.记录(名称 + string.Format(": 从 [{0}] 收", 服务器地址), BitConverter.ToString(__实际接收字节));
                 _IN消息分割.接收数据(服务器地址, __实际接收字节);
                 __数据流.BeginRead(__缓存, 0, 接收缓冲区大小, 异步接收数据, new Tuple<NetworkStream, byte[]>(_数据流, __缓存));
             }
@@ -282,7 +282,7 @@ namespace INET.传输
             {
                 return;
             }
-            H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
+            //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
             try
             {
                 _数据流.Write(__消息, 0, __消息.Length);
@@ -297,7 +297,13 @@ namespace INET.传输
 
         public void 异步发送(byte[] __消息)
         {
-            throw new NotImplementedException();
+            if (_连接 == null || _连接.Client == null || !_连接.Connected)
+            {
+                return;
+            }
+            //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
+            _数据流.BeginWrite(__消息, 0, __消息.Length, null, null);
+            On发送成功(服务器地址, __消息);
         }
 
         public event Action<IPEndPoint, byte[]> 收到消息;

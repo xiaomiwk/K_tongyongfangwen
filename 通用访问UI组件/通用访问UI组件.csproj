@@ -128,11 +128,11 @@
     <Compile Include="查看数据\F列结构_查看.Designer.cs">
       <DependentUpon>F列结构_查看.cs</DependentUpon>
     </Compile>
-    <Compile Include="F通知.cs">
+    <Compile Include="F监听事件.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="F通知.Designer.cs">
-      <DependentUpon>F通知.cs</DependentUpon>
+    <Compile Include="F监听事件.Designer.cs">
+      <DependentUpon>F监听事件.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="查看数据\F表格结构_查看.cs">
@@ -195,8 +195,8 @@
     <EmbeddedResource Include="查看数据\F列结构_查看.resx">
       <DependentUpon>F列结构_查看.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="F通知.resx">
-      <DependentUpon>F通知.cs</DependentUpon>
+    <EmbeddedResource Include="F监听事件.resx">
+      <DependentUpon>F监听事件.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

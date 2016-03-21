@@ -16,14 +16,6 @@ namespace 通用访问.DTO
         单值, 对象, 单值数组, 对象数组
     }
 
-
-    //重要性(普通/重要/严重)
-
-    public enum E通知重要性
-    {
-        普通, 重要, 严重
-    }
-
     //public class E角色
     //{
     //    public const string 工程 = "工程";

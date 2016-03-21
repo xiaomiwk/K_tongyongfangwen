@@ -21,10 +21,6 @@ namespace 通用访问.客户端
 
         private N主动会话 _N主动会话;
 
-        DateTime _最后心跳时间;
-
-        private int _心跳频率 = FT通用访问工厂.心跳频率;
-
         private string _事件标识结构 = "{0}:{1}";
 
         private H多事件<string> _事件订阅 = new H多事件<string>();
@@ -65,58 +61,21 @@ namespace 通用访问.客户端
                 连接正常 = true;
 
                 Task.Factory.StartNew(On已连接);
-
-                Task.Factory.StartNew(() =>
-                {
-                    while (_IN网络节点.连接正常)
-                    {
-                        try
-                        {
-                            _IN上下文.发送通知(_IN网络节点.服务器地址, new M心跳());
-                            Thread.Sleep(_心跳频率);
-                        }
-                        catch (Exception)
-                        {
-                            break;
-                        }
-                    }
-                });
-                Task.Factory.StartNew(() =>
-                {
-                    var __连接时间 = _IN网络节点.开启时间;
-                    _最后心跳时间 = DateTime.Now;
-                    while (_IN网络节点.连接正常 && _IN网络节点.开启时间 == __连接时间)
-                    {
-                        if (_最后心跳时间.AddMilliseconds(_心跳频率 * 3) < DateTime.Now)
-                        {
-                            On已断开(false);
-                        }
-                        Thread.Sleep(_心跳频率);
-                    }
-                });
             };
             _IN上下文.设置发送方法((__节点, __消息) => _IN网络节点.同步发送(__消息));
-            _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M心跳)), () => new N被动会话(new Action<N会话参数>(处理心跳)));
-            _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M通知)), () => new N被动会话(new Action<N会话参数>(处理通知)));
             _IN上下文.订阅报文(H报文注册.查询功能码(typeof(M接收事件)), () => new N被动会话(new Action<N会话参数>(处理事件)));
 
-            _IN网络节点.最大消息长度 = 50000;
+            _IN网络节点.最大消息长度 = 10000000;
             _IN网络节点.开启();
         }
 
         public void 断开()
         {
+            自动重连 = false;
+            _IN网络节点.自动重连 = this.自动重连;
             连接正常 = false;
             _IN网络节点.断开();
             On已断开(true);
-            On收到了通知(new M通知
-            {
-                对象 = "系统",
-                概要 = "谢谢访问",
-                详细 = "",
-                重要性 = E通知重要性.普通,
-                角色 = E角色.所有
-            });
         }
 
         public bool 连接正常 { get; set; }
@@ -137,24 +96,6 @@ namespace 通用访问.客户端
         {
             Action handler = 已连接;
             if (handler != null) handler();
-        }
-
-        public event Action<M通知> 收到了通知;
-
-        protected virtual void On收到了通知(M通知 __通知)
-        {
-            var handler = 收到了通知;
-            if (handler != null) handler(__通知);
-        }
-
-        private void 处理心跳(N会话参数 __会话参数)
-        {
-            _最后心跳时间 = DateTime.Now;
-        }
-
-        public void 处理通知(N会话参数 __会话参数)
-        {
-            On收到了通知(__会话参数.负载 as M通知);
         }
 
         public M对象列表查询结果 查询可访问对象()

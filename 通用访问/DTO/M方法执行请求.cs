@@ -18,5 +18,10 @@ namespace 通用访问.DTO
         {
             实参列表 = new List<M实参>();
         }
+
+        public override string ToString()
+        {
+            return string.Format("执行方法({0}.{1})", 对象名称, 方法名称);
+        }
     }
 }

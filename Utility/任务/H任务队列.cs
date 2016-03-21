@@ -17,7 +17,6 @@ namespace Utility.任务
 
         private B性能监控 _监控;
 
-        /// <param name="__分组统计数量"></param>
         /// <param name="__延迟阈值">毫秒</param>
         /// <param name="__耗时阈值">毫秒</param>
         public H任务队列(int __分组统计数量 = 1000, int __延迟阈值 = 3000, int __耗时阈值 = 100)
@@ -59,15 +58,16 @@ namespace Utility.任务
 
             private CancellationTokenSource _取消标志 = new CancellationTokenSource();
 
-            private string _节点;
+            private string _名称;
 
             public M队列(string __名称)
             {
-                _节点 = __名称;
+                _名称 = __名称;
             }
 
-            public void 添加事项<T>(T __数据, Action<T> __处理数据, B性能监控 __监控)
+            public void 添加事项<T>(T __数据, Action<T> __处理数据, B性能监控 __监控 = null)
             {
+                Debug.WriteLine("{0} 添加事项 {1}", DateTime.Now.ToString("HH:mm:ss.fff"), __数据);
                 var __接收时间 = Environment.TickCount;
                 _任务 = _任务.ContinueWith(q =>
                 {
@@ -75,32 +75,23 @@ namespace Utility.任务
                     {
                         try
                         {
-                            __监控.监控下执行(_节点, __数据, __接收时间,__处理数据);
+                            Debug.WriteLine("{0} 执行事项 {1}", DateTime.Now.ToString("HH:mm:ss.fff"), __数据);
+                            if (__监控 == null)
+                            {
+                                __处理数据(__数据);
+                            }
+                            else
+                            {
+                                __监控.监控下执行(_名称, __数据, __接收时间, __处理数据);
+                            }
                         }
                         catch (Exception ex)
                         {
-                            H调试.记录异常(ex, _节点);
+                            H调试.记录异常(ex, _名称);
                         }
                     }
                 }, _取消标志.Token);
-            }
 
-            public void 添加事项<T>(T __数据, Action<T> __处理数据)
-            {
-                _任务 = _任务.ContinueWith(q =>
-                {
-                    if (!_取消标志.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            __处理数据(__数据);
-                        }
-                        catch (Exception ex)
-                        {
-                            H调试.记录异常(ex, _节点);
-                        }
-                    }
-                }, _取消标志.Token);
             }
 
             public void 关闭()
@@ -125,6 +116,8 @@ namespace Utility.任务
 
             private int _耗时阈值;
 
+            private bool _延迟中;
+
             public B性能监控(int __分组统计数量, int __延迟阈值, int __耗时阈值)
             {
                 _分组统计数量 = __分组统计数量;
@@ -132,7 +125,7 @@ namespace Utility.任务
                 _耗时阈值 = __耗时阈值;
             }
 
-            public void 监控下执行<T>(string __来源, T __数据, int __接收时间, Action<T> __处理数据)
+            public void 监控下执行<T>(string __队列名称, T __数据, int __接收时间, Action<T> __处理数据)
             {
                 var __延迟 = Environment.TickCount - __接收时间;
                 Interlocked.Add(ref _总延时, __延迟);
@@ -156,13 +149,20 @@ namespace Utility.任务
                 if (__耗时 > _耗时阈值)
                 {
                     var __日志 = new StringBuilder();
-                    __日志.AppendFormat("处理 [{0}] 的 {1}:", __来源, __数据);
-                    __日志.AppendFormat("延迟 {0} 毫秒, ", __延迟);
+                    __日志.AppendFormat("处理 {0} ,", __数据);
                     __日志.AppendFormat("耗时 {0} 毫秒. ", __计时器.ElapsedMilliseconds);
-                    H调试.记录(__日志.ToString(), TraceEventType.Warning);
+                    H调试.记录提示("耗时告警:" + __队列名称, __日志.ToString());
+                }
+                var __本次延迟 = __延迟 > _延迟阈值;
+                if (__本次延迟 != _延迟中)
+                {
+                    _延迟中 = __本次延迟;
+                    var __日志 = new StringBuilder();
+                    __日志.AppendFormat("处理 {0} ,", __数据);
+                    __日志.AppendFormat("延迟 {0} 毫秒, ", __延迟);
+                    H调试.记录提示((_延迟中 ? "开始延迟:" : "结束延迟:") + __队列名称, __日志.ToString());
                 }
             }
         }
     }
-
 }

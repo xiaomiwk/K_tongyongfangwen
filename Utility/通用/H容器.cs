@@ -21,7 +21,7 @@ namespace Utility.通用
             _容器 = new UnityContainer().AddNewExtension<Interception>();
         }
 
-        public static void 注入<T, T1>(bool __单实例 = true, bool __拦截 = true, string __名称 = "", object[] __构造参数 = null)
+        public static void 注入<T, T1>(bool __单实例 = true, bool __拦截 = true, string __名称 = "", params object[] __构造参数)
             where T : class
             where T1 : class, T
         {
