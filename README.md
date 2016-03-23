@@ -1,7 +1,7 @@
-## 通用访问
+# 通用访问
 通过类似“反射”的方式开发跨平台的分布式应用！包括协议、.NET SDK、通用工具、demo
 
-**特点**
+## 特点
 
 1. 通用工具提供了面向工程人员、开发人员的通用配置界面，可以非常优雅的剔除混在面向客户的软件中的面向工程人员和开发人员的元素
 
@@ -11,7 +11,7 @@
 
 4. 基于.NET SDK开发分布式程序，非常方便
 
-**服务器端示例**
+## 服务器端示例
 ![image](https://github.com/xiaomiwk/K_tongyongfangwen/blob/master/1.png?raw=true)
 `
 
@@ -65,11 +65,11 @@
 
 `
 
-**通用工具**
+## 通用工具
 ![image](https://github.com/xiaomiwk/K_tongyongfangwen/blob/master/2.png?raw=true)
 
 
-**客户端示例**
+## 客户端示例
 
 `
 
@@ -126,7 +126,7 @@
 
 `
 
-**协议**
+## 协议
 
 <h5>传输</h5>
 
