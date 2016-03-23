@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace 通用访问.服务端
 
         private Dictionary<string, Func<M对象>> _所有对象 = new Dictionary<string, Func<M对象>>();
 
-        private Dictionary<string, List<IPEndPoint>> _所有事件订阅 = new Dictionary<string, List<IPEndPoint>>();
+        private ConcurrentDictionary<string, List<IPEndPoint>> _所有事件订阅 = new ConcurrentDictionary<string, List<IPEndPoint>>();
 
         private string _事件标识结构 = "{0}-{1}";
 
@@ -67,6 +68,7 @@ namespace 通用访问.服务端
                     客户端列表.Remove(q);
                 }
                 On客户端已断开(q);
+                _IN上下文.注销节点(q);
             };
 
             _IN上下文.设置发送方法(_IN网络节点.同步发送);
@@ -195,15 +197,33 @@ namespace 通用访问.服务端
             var __事件名称 = __订阅事件.事件名称;
             var __远端 = __会话参数.远端;
             var __事件标识 = string.Format(_事件标识结构, __对象名称, __事件名称);
-            if (!_所有事件订阅.ContainsKey(__事件标识))
+
+            lock (_lockobj)
             {
-                _所有事件订阅[__事件标识] = new List<IPEndPoint>();
+                if (!_所有事件订阅.ContainsKey(__事件标识))
+                {
+                    _所有事件订阅[__事件标识] = new List<IPEndPoint>();
+                }
+                if (!_所有事件订阅[__事件标识].Contains(__远端))
+                {
+                    _所有事件订阅[__事件标识].Add(__远端);
+                    H日志输出.记录("接收[M订阅事件]", string.Format("[{0}] {1}.{2}", __远端, __对象名称, __事件名称), TraceEventType.Information);
+                }
             }
-            if (!_所有事件订阅[__事件标识].Contains(__远端))
-            {
-                _所有事件订阅[__事件标识].Add(__远端);
-            }
+
+            //var __订阅地址列表 = _所有事件订阅.GetOrAdd(__事件标识, q =>
+            //{
+            //    H日志输出.记录("创建地址列表", __会话参数.远端.ToString(), TraceEventType.Information);
+            //    return new List<IPEndPoint>();
+            //});
+            //if (!__订阅地址列表.Contains(__远端))
+            //{
+            //    __订阅地址列表.Add(__远端);
+            //    H日志输出.记录("接收[M订阅事件]", string.Format("[{0}] {1}.{2}", __远端, __对象名称, __事件名称), TraceEventType.Information);
+            //}
         }
+
+        private object _lockobj = new object();
 
         private void 处理取消订阅事件(N会话参数 __会话参数)
         {
@@ -212,26 +232,29 @@ namespace 通用访问.服务端
             var __事件名称 = __取消订阅.事件名称;
             var __远端 = __会话参数.远端;
             var __事件标识 = string.Format(_事件标识结构, __对象名称, __事件名称);
-            if (!_所有事件订阅.ContainsKey(__事件标识))
+
+            List<IPEndPoint> __订阅地址列表;
+            if (_所有事件订阅.TryGetValue(__事件标识, out __订阅地址列表))
             {
-                return;
-            }
-            if (_所有事件订阅[__事件标识].Contains(__远端))
-            {
-                _所有事件订阅[__事件标识].Remove(__远端);
+                if (__订阅地址列表.Contains(__远端))
+                {
+                    __订阅地址列表.Remove(__远端);
+                }
             }
         }
 
         public void 触发事件(string __对象名称, string __事件名称, Dictionary<string, string> __参数列表 = null, List<IPEndPoint> __地址列表 = null)
         {
             var __事件标识 = string.Format(_事件标识结构, __对象名称, __事件名称);
-            if (!_所有事件订阅.ContainsKey(__事件标识))
+
+            List<IPEndPoint> __订阅地址列表;
+            if (!_所有事件订阅.TryGetValue(__事件标识, out __订阅地址列表))
             {
                 return;
             }
             if (__地址列表 == null)
             {
-                __地址列表 = new List<IPEndPoint>(_所有事件订阅[__事件标识]);
+                __地址列表 = new List<IPEndPoint>(__订阅地址列表);
             }
             __地址列表.ForEach(__远端 =>
             {
@@ -243,6 +266,7 @@ namespace 通用访问.服务端
                         实参列表 = M实参.字典转列表(__参数列表),
                         事件名称 = __事件名称,
                     });
+                    H日志输出.记录("触发[M订阅事件]", string.Format("{3}-{4}[{0}] {1}.{2}", __远端, __对象名称, __事件名称, 客户端列表.Count, __地址列表.Count), TraceEventType.Information);
                 }
                 else
                 {

@@ -100,14 +100,15 @@ namespace Utility.Windows
         /// <returns></returns>
         private static Int32 最后处理异常(ref long a)
         {
-            var __文件 = "未处理异常";
+            var __文件名 = "未处理异常";
             if (!_获取是否DotNet异常())
             {
                 H调试.记录致命("！！！跨平台(P/INVOKE)调用异常 ！！！");
-                __文件 = "跨平台调用异常";
+                __文件名 = "跨平台调用异常";
             }
-            记录(string.Format("{0}\\{1} mm-dd hh-MM-ss.dmp", H调试.日志目录, __文件));
-            H调试.截屏(__文件);
+            __文件名 += DateTime.Now.ToString("yyyy年MM月dd日 HH时mm分ss秒");
+            记录(string.Format("{0}\\{1}.dmp", H调试.日志目录, __文件名));
+            H调试.截屏(__文件名);
             return 1;
         }
 

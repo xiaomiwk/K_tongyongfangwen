@@ -74,11 +74,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Practices.Unity">
-      <HintPath>..\LIB\Microsoft.Practices.Unity.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\资源\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Practices.Unity.Interception">
-      <HintPath>..\..\资源\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.1.505.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\资源\Microsoft.Practices.Unity.Interception.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
@@ -139,6 +141,8 @@
     <Compile Include="WindowsForm\FormK.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="扩展\HUI线程.cs" />
+    <Compile Include="任务\H线程队列.cs" />
     <Compile Include="通用\AspectF\AspectExtensions.cs" />
     <Compile Include="通用\AspectF\AspectF.cs" />
     <Compile Include="通用\AspectF\ICache.cs" />
@@ -203,7 +207,6 @@
     <Compile Include="Windows\HMiniDump.cs" />
     <Compile Include="Windows\H控制台进程.cs" />
     <Compile Include="Windows\H检测CPU.cs" />
-    <Compile Include="任务\参考\H优先级队列.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -227,15 +230,8 @@
     <Compile Include="WindowsForm\U窗口背景.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="任务\H同步列表.cs" />
-    <Compile Include="任务\H同步字典.cs" />
-    <Compile Include="任务\H对象池.cs" />
+    <Compile Include="模式\H对象池.cs" />
     <Compile Include="任务\H任务队列.cs" />
-    <Compile Include="任务\参考\BlockingCollection.cs" />
-    <Compile Include="任务\参考\ConcurrentBag.cs" />
-    <Compile Include="任务\参考\ConcurrentDictionary.cs" />
-    <Compile Include="任务\参考\ConcurrentStack.cs" />
-    <Compile Include="任务\参考\ConcurrentQueue.cs" />
     <Compile Include="存储\DRDB表存储.cs" />
     <Compile Include="存储\HXML.cs" />
     <Compile Include="存储\ID键值对存储.cs" />
@@ -250,7 +246,6 @@
     <Compile Include="Windows\H检测网络.cs" />
     <Compile Include="扩展\H检测耗时.cs" />
     <Compile Include="Windows\H注册表.cs" />
-    <Compile Include="任务\H顺序调度.cs" />
     <Compile Include="任务\H限时执行.cs" />
     <Compile Include="WindowsForm\H窗口API.cs" />
     <Compile Include="WindowsForm\U容器.cs">
@@ -375,6 +370,7 @@
     <Compile Include="存储\HINI.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="任务\参考\" />
     <Folder Include="模式\参考\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

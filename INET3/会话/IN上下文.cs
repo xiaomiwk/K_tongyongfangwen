@@ -25,6 +25,8 @@ namespace INET.会话
         int 注册请求(IN处理报文 __处理请求);
 
         void 注销请求(int __凭据);
+
+        void 注销节点(IPEndPoint __远端);
     }
 
 }

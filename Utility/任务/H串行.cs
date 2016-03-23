@@ -24,7 +24,7 @@ namespace Utility.任务
             _调度服务 = __调度服务;
         }
 
-        public static void 执行(Action __动作, string __动作描述 = null)
+        public static void 执行(Action __动作)
         {
             lock (_任务同步)
             {
@@ -43,7 +43,7 @@ namespace Utility.任务
             }
         }
 
-        public static void 执行(Action<object> __动作, object __参数, string __动作描述 = null)
+        public static void 执行(Action<object> __动作, object __参数)
         {
             lock (_任务同步)
             {

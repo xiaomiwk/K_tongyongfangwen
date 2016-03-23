@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="会话\H线程队列.cs" />
     <Compile Include="会话\H任务队列.cs" />
     <Compile Include="会话\H多事件.cs" />
     <Compile Include="H日志输出.cs" />

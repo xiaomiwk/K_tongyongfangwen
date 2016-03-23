@@ -135,7 +135,14 @@ namespace INET.传输
             }
             catch (Exception ex)
             {
-                H日志输出.记录(ex, "侦听异常");
+                if (this.允许监听)
+                {
+                    H日志输出.记录(ex, "侦听异常");
+                }
+                else
+                {
+                    return;
+                }
             }
             _侦听器.BeginAcceptTcpClient(异步侦听, _侦听器);
         }
@@ -323,11 +330,6 @@ namespace INET.传输
             if (handler != null) handler(__正在监听);
         }
 
-        public bool 信道忙(IPEndPoint __客户端)
-        {
-            throw new NotImplementedException();
-        }
-
         public void 同步发送(IPEndPoint __客户端节点, byte[] __消息)
         {
             try
@@ -341,10 +343,10 @@ namespace INET.传输
                     //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", __客户端节点), BitConverter.ToString(__消息));
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败;", __客户端节点), BitConverter.ToString(__消息), TraceEventType.Information);
-                throw new ApplicationException("连接已断开,无法发送");
+                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败, {1}", __客户端节点, ex.Message), BitConverter.ToString(__消息), TraceEventType.Information);
+                throw new ApplicationException("发送失败");
             }
         }
 
@@ -379,6 +381,7 @@ namespace INET.传输
         public void 关闭()
         {
             H日志输出.记录(名称 + ": 关闭", null, TraceEventType.Information);
+            this.允许监听 = false;
             lock (_客户端操作锁)
             {
                 foreach (var kv in _所有客户端)

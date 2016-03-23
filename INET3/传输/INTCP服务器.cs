@@ -40,9 +40,6 @@ namespace INET.传输
 
         bool 验证在线(IPEndPoint __客户端节点);
 
-        bool 信道忙(IPEndPoint __客户端节点);
-
-
         event Action<IPEndPoint> 客户端已断开;
 
         event Action<IPEndPoint> 客户端已连接;

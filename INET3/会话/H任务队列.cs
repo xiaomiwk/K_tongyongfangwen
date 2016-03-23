@@ -12,7 +12,7 @@ namespace INET.会话
 {
     public class H任务队列
     {
-        private ConcurrentDictionary<string, M队列> _节点字典 = new ConcurrentDictionary<string, M队列>();
+        private ConcurrentDictionary<string, M队列> _队列缓存 = new ConcurrentDictionary<string, M队列>();
 
         private B性能监控 _监控;
 
@@ -25,7 +25,7 @@ namespace INET.会话
 
         public void 添加事项<T>(string __队列标识, T __数据, Action<T> __处理数据, bool __监控 = false)
         {
-            var __队列 = _节点字典.GetOrAdd(__队列标识, k => new M队列(__队列标识));
+            var __队列 = _队列缓存.GetOrAdd(__队列标识, k => new M队列(__队列标识));
             if (__监控)
             {
                 __队列.添加事项(__数据, __处理数据, _监控);
@@ -39,16 +39,15 @@ namespace INET.会话
         public void 关闭队列(string __队列标识)
         {
             M队列 __队列;
-            if (_节点字典.TryGetValue(__队列标识, out __队列))
+            if (_队列缓存.TryRemove(__队列标识, out __队列))
             {
                 __队列.关闭();
-                _节点字典.TryRemove(__队列标识, out __队列);
             }
         }
 
         public void 关闭所有()
         {
-            _节点字典.Values.ToList().ForEach(q => q.关闭());
+            _队列缓存.Values.ToList().ForEach(q => q.关闭());
         }
 
         class M队列
@@ -66,7 +65,7 @@ namespace INET.会话
 
             public void 添加事项<T>(T __数据, Action<T> __处理数据, B性能监控 __监控 = null)
             {
-                Debug.WriteLine("{0} 添加事项 {1}", DateTime.Now.ToString("HH:mm:ss.fff"), __数据);
+                //Debug.WriteLine("{0} 添加事项 {1}", DateTime.Now.ToString("HH:mm:ss.fff"), __数据);
                 var __接收时间 = Environment.TickCount;
                 _任务 = _任务.ContinueWith(q =>
                 {
@@ -74,7 +73,7 @@ namespace INET.会话
                     {
                         try
                         {
-                            Debug.WriteLine("{0} 执行事项 {1}", DateTime.Now.ToString("HH:mm:ss.fff"), __数据);
+                            //Debug.WriteLine("{0} 执行事项 {1}", DateTime.Now.ToString("HH:mm:ss.fff"), __数据);
                             if (__监控 == null)
                             {
                                 __处理数据(__数据);
@@ -100,7 +99,7 @@ namespace INET.会话
             }
         }
 
-        private class B性能监控
+        class B性能监控
         {
             private long _总耗时;
 
@@ -113,8 +112,6 @@ namespace INET.会话
             private int _延迟阈值;
 
             private int _耗时阈值;
-
-            private bool _延迟中;
 
             public B性能监控(int __分组统计数量, int __延迟阈值, int __耗时阈值)
             {
@@ -151,14 +148,12 @@ namespace INET.会话
                     __日志.AppendFormat("耗时 {0} 毫秒. ", __计时器.ElapsedMilliseconds);
                     H日志输出.记录("耗时告警:" + __队列名称, __日志.ToString(), TraceEventType.Warning);
                 }
-                var __本次延迟 = __延迟 > _延迟阈值;
-                if (__本次延迟 != _延迟中)
+                if (__延迟 > _延迟阈值)
                 {
-                    _延迟中 = __本次延迟;
                     var __日志 = new StringBuilder();
                     __日志.AppendFormat("处理 {0} ,", __数据);
                     __日志.AppendFormat("延迟 {0} 毫秒, ", __延迟);
-                    H日志输出.记录((_延迟中 ? "开始延迟:" : "结束延迟:") + __队列名称, __日志.ToString(), TraceEventType.Warning);
+                    H日志输出.记录("延迟:" + __队列名称, __日志.ToString(), TraceEventType.Warning);
                 }
             }
         }

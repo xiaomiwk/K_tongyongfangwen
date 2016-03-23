@@ -19,7 +19,6 @@ using Utility.WindowsForm;
 using Utility.存储;
 using Utility.通用;
 using 通用访问;
-using 通用访问.DTO;
 
 namespace 通用访问工具
 {
@@ -52,7 +51,7 @@ namespace 通用访问工具
             //加载设备列表
             加载设备列表();
 
-            H日志输出.设置(记录信息);
+            H日志输出.设置(__日志 => H调试.记录(__日志.概要, __日志.等级, __日志.详细, __日志.方法, __日志.文件, __日志.行号));
         }
 
         private void 加载设备列表()
@@ -206,11 +205,6 @@ namespace 通用访问工具
                     __显示连接正常();
                 }
             }
-        }
-
-        private void 记录信息(H日志输出.M日志 __日志)
-        {
-            H调试.记录(__日志.概要, __日志.等级, __日志.详细, __日志.方法, __日志.文件, __日志.行号);
         }
 
         private class M设备

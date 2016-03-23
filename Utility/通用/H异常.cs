@@ -58,7 +58,7 @@ namespace Utility.通用
             }
 
             var __预计异常 = ex.GetBaseException() as M预计异常;
-            提示不可恢复异常(__预计异常 != null ? __预计异常.Message : "程序出错, 即将关闭", 获取异常描述(ex));
+            提示不可恢复异常(__预计异常 != null ? __预计异常.Message : "程序出错, 即将关闭", ex.ToString());
         }
 
         internal static void 处理UI线程(Exception ex, bool __未处理自动退出 = true )
@@ -70,7 +70,7 @@ namespace Utility.通用
                     return;
                 }
             }
-            var __异常描述 = 获取异常描述(ex);
+            var __异常描述 = ex.ToString();
             var __输入格式异常 = ex as M输入异常;
             if (__输入格式异常 != null)
             {
@@ -119,21 +119,6 @@ namespace Utility.通用
                 //Environment.FailFast("UI线程中出现未处理异常", ex);
                 Environment.Exit(0);
             }
-        }
-
-        public static string 获取异常描述(Exception __异常)
-        {
-            return __异常.ToString();
-            //var __描述 = new StringBuilder();
-            //__描述.AppendFormat("描述:\t{0}", __异常.Message).Append(Environment.NewLine);
-            //__描述.AppendFormat("类型:\t{0}", __异常.GetType().FullName).Append(Environment.NewLine);
-            //__描述.Append(__异常.StackTrace).Append(Environment.NewLine);
-            //var __内部异常 = __异常.InnerException;
-            //if (__内部异常 != null && __内部异常 != __异常)
-            //{
-            //    __描述.Append(Environment.NewLine).Append("------------内部异常------------").Append(Environment.NewLine).Append(获取异常描述(__内部异常));
-            //}
-            //return __描述.ToString();
         }
 
     }

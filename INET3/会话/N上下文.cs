@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace INET.会话
 {
@@ -12,7 +11,7 @@ namespace INET.会话
     {
         private readonly H多事件<string> _报文处理 = new H多事件<string>();
 
-        private readonly H任务队列 _队列;
+        private readonly H线程队列 _队列;
 
         private readonly ConcurrentDictionary<int, List<IN处理报文>> _所有请求 = new ConcurrentDictionary<int, List<IN处理报文>>();
 
@@ -28,7 +27,8 @@ namespace INET.会话
         {
             编解码器 = __编解码器;
             名称 = __名称;
-            _队列 = new H任务队列();
+            //_队列 = new H任务队列();
+            _队列 = new H线程队列();
         }
 
         public void 设置发送方法(Action<IPEndPoint, byte[]> __方法)
@@ -73,8 +73,12 @@ namespace INET.会话
             var __负载 = __解码.Item2;
             H日志输出.记录(string.Format("{0}: 从 [{1}] 收", 名称, __来源), string.Format("事务:{0}-{1}; 功能码:{2}; 负载:{3};", __事务.发方事务, __事务.收方事务, __事务.功能码, __负载));
 
-            var __队列标识 = string.Format("[{0}]{1}", __来源, __事务.通道标识);
-            _队列.添加事项(__队列标识, new M数据(__来源, __事务, __负载), 处理报文, true);
+            _队列.添加事项(__来源.ToString(), __事务.通道标识 ?? "", new M数据(__来源, __事务, __负载), 处理报文, true);
+        }
+
+        public void 注销节点(IPEndPoint __远端)
+        {
+            _队列.关闭队列(__远端.ToString());
         }
 
         void 处理报文(object __参数)

@@ -151,13 +151,17 @@ namespace Utility.通用
             });
         }
 
-        public static void 截屏(string __文件名类型 = "未处理异常")
+        public static void 截屏(string __文件名 = null)
         {
+            if (__文件名 == null)
+            {
+                __文件名 = string.Format("未处理异常 {0}", DateTime.Now.ToString("yyyy年MM月dd日 HH时mm分ss秒"));
+            }
             Image myImg = new Bitmap(Screen.AllScreens[0].Bounds.Width, Screen.AllScreens[0].Bounds.Height);
             Graphics g = Graphics.FromImage(myImg);
 
             g.CopyFromScreen(new Point(0, 0), new Point(0, 0), Screen.AllScreens[0].Bounds.Size);
-            var __保存路径 = H路径.获取绝对路径(string.Format("{0}\\{1} {2}.jpg", 日志目录, __文件名类型, DateTime.Now.ToString("MM月dd日 HH时mm分ss秒")));
+            var __保存路径 = H路径.获取绝对路径(string.Format("{0}\\{1}.jpg", 日志目录, __文件名));
             myImg.Save(__保存路径, System.Drawing.Imaging.ImageFormat.Jpeg);
         }
 

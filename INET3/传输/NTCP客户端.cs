@@ -288,9 +288,9 @@ namespace INET.传输
                 _数据流.Write(__消息, 0, __消息.Length);
                 On发送成功(服务器地址, __消息);
             }
-            catch
+            catch (Exception ex)
             {
-                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败", 服务器地址));
+                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败, {1}", 服务器地址, ex.Message));
                 throw new ApplicationException("发送失败");
             }
         }
