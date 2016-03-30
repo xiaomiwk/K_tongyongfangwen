@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问工具", "通用访问工具\通用访问工具.csproj", "{A4E74BBC-166A-49F1-A5EA-FBEE1626C9D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问.工具", "通用访问.工具\通用访问.工具.csproj", "{A4E74BBC-166A-49F1-A5EA-FBEE1626C9D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "Utility\Utility.csproj", "{C56E903B-F745-4E12-A01B-90E915E04968}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问服务端测试", "通用访问服务端测试\通用访问服务端测试.csproj", "{DB760314-2D19-492D-8E1C-63BE818E1404}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问.服务端测试", "通用访问.服务端测试\通用访问.服务端测试.csproj", "{DB760314-2D19-492D-8E1C-63BE818E1404}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "INET3", "INET3\INET3.csproj", "{56D6CB6D-E9B9-4361-B487-CFB87B508653}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问", "通用访问\通用访问.csproj", "{967F394C-945C-43DA-A08D-B9B2C15C9646}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问工具-命令版", "通用访问工具-命令版\通用访问工具-命令版.csproj", "{5728D75A-77BC-4944-8B12-6E501396A4D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问.工具-命令版", "通用访问.工具-命令版\通用访问.工具-命令版.csproj", "{5728D75A-77BC-4944-8B12-6E501396A4D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问UI组件", "通用访问UI组件\通用访问UI组件.csproj", "{0CFB04AB-88C7-4E49-8B65-869DD246FB17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "通用访问.UI组件", "通用访问.UI组件\通用访问.UI组件.csproj", "{0CFB04AB-88C7-4E49-8B65-869DD246FB17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -37,6 +37,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -69,6 +70,7 @@
     <Compile Include="DTO\M子成员.cs" />
     <Compile Include="H报文注册.cs" />
     <Compile Include="B编解码器.cs" />
+    <Compile Include="服务端\BWebApi.cs" />
     <Compile Include="自定义序列化\EnumConverter.cs" />
     <Compile Include="自定义序列化\时间Converter.cs" />
     <Compile Include="自定义序列化\DictionaryConverter.cs" />
@@ -88,6 +90,29 @@
       <Project>{56d6cb6d-e9b9-4361-b487-cfb87b508653}</Project>
       <Name>INET3</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebUI\css\bootstrap.css" />
+    <EmbeddedResource Include="WebUI\css\dashboard.css" />
+    <EmbeddedResource Include="WebUI\css\docs.min.css" />
+    <EmbeddedResource Include="WebUI\css\style.css" />
+    <EmbeddedResource Include="WebUI\img\favicon.png" />
+    <EmbeddedResource Include="WebUI\img\K.png" />
+    <EmbeddedResource Include="WebUI\index.html" />
+    <EmbeddedResource Include="WebUI\js\bootstrap.js" />
+    <EmbeddedResource Include="WebUI\js\bootstrap.min.js" />
+    <EmbeddedResource Include="WebUI\js\holder.js" />
+    <EmbeddedResource Include="WebUI\js\html5shiv.js" />
+    <EmbeddedResource Include="WebUI\js\ie-emulation-modes-warning.js" />
+    <EmbeddedResource Include="WebUI\js\ie10-viewport-bug-workaround.js" />
+    <EmbeddedResource Include="WebUI\js\ie8-responsive-file-warning.js" />
+    <EmbeddedResource Include="WebUI\js\jquery.min.js" />
+    <EmbeddedResource Include="WebUI\js\less-1.3.3.min.js" />
+    <EmbeddedResource Include="WebUI\js\npm.js" />
+    <EmbeddedResource Include="WebUI\js\scripts.js" />
+    <EmbeddedResource Include="WebUI\object.html" />
+    <EmbeddedResource Include="WebUI\objects.html" />
+    <EmbeddedResource Include="WebUI\关于.html" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

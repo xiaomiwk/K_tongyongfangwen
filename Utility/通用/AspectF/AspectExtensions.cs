@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Transactions;
 
 //namespace OmarALZabir.AspectF
@@ -471,5 +472,27 @@ namespace Utility.通用
                                          return item;
                                      });
         }
+
+        [DebuggerStepThrough]
+        public static AspectF DoAndSleep(this AspectF aspect, int timespan, Action<int> __记录耗时 = null)
+        {
+            return aspect.Combine(work =>
+            {
+                var __秒表 = new Stopwatch();
+                __秒表.Start();
+                work();
+                __秒表.Stop();
+                var __休眠 = timespan - (int)__秒表.Elapsed.TotalMilliseconds;
+                if (__记录耗时 != null)
+                {
+                    __记录耗时((int)__秒表.Elapsed.TotalMilliseconds);
+                }
+                if (__休眠 > 0)
+                {
+                    Thread.Sleep(__休眠);
+                }
+            });
+        }
+
     }
 }

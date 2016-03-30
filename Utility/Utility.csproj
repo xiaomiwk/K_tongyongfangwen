@@ -188,7 +188,6 @@
     <Compile Include="WindowsForm\F调试窗口.Designer.cs">
       <DependentUpon>F调试窗口.cs</DependentUpon>
     </Compile>
-    <Compile Include="WindowsForm\H异步.cs" />
     <Compile Include="WindowsForm\FlowLayoutPanelK.cs">
       <SubType>Component</SubType>
     </Compile>

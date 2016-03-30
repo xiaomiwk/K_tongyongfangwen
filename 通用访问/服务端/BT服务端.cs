@@ -5,12 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using INET;
 using INET.会话;
 using INET.传输;
-using INET.模板;
 using 通用访问.DTO;
 
 namespace 通用访问.服务端
@@ -29,7 +26,11 @@ namespace 通用访问.服务端
 
         public int 端口 { get; set; }
 
+        public int WebApi端口 { get; set; }
+
         public List<IPEndPoint> 客户端列表 { get; set; }
+
+        private BWebApi _BWebApi;
 
         public void 添加对象(string 对象名称, Func<M对象> 获取对象)
         {
@@ -81,6 +82,20 @@ namespace 通用访问.服务端
 
             _IN网络节点.最大消息长度 = 10000000;
             _IN网络节点.开启();
+
+            try
+            {
+                if (WebApi端口 == 0)
+                {
+                    WebApi端口 = 端口 + 1;
+                }
+                _BWebApi = new BWebApi(WebApi端口, () => _所有对象);
+                _BWebApi.开启();
+            }
+            catch (Exception ex)
+            {
+                H日志输出.记录("通用访问WebApi开启失败: " + ex.Message);
+            }
         }
 
         public void 关闭()
@@ -89,6 +104,10 @@ namespace 通用访问.服务端
             {
                 _IN网络节点.断开所有客户端();
                 _IN网络节点.关闭();
+            }
+            if (_BWebApi != null)
+            {
+                _BWebApi.关闭();
             }
         }
 
@@ -210,12 +229,8 @@ namespace 通用访问.服务端
                     H日志输出.记录("接收[M订阅事件]", string.Format("[{0}] {1}.{2}", __远端, __对象名称, __事件名称), TraceEventType.Information);
                 }
             }
-
-            //var __订阅地址列表 = _所有事件订阅.GetOrAdd(__事件标识, q =>
-            //{
-            //    H日志输出.记录("创建地址列表", __会话参数.远端.ToString(), TraceEventType.Information);
-            //    return new List<IPEndPoint>();
-            //});
+            //下列代码有同步问题
+            //var __订阅地址列表 = _所有事件订阅.GetOrAdd(__事件标识, q => new List<IPEndPoint>());
             //if (!__订阅地址列表.Contains(__远端))
             //{
             //    __订阅地址列表.Add(__远端);

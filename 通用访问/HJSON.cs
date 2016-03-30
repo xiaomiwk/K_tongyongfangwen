@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Newtonsoft.Json;
 using 通用访问.DTO;
 using 通用访问.自定义序列化;
@@ -18,6 +17,9 @@ namespace 通用访问
             _默认自定义序列化.Add(new IPAddressConverter());
             _默认自定义序列化.Add(new EnumConverter<E角色>());
             _默认自定义序列化.Add(new EnumConverter<E数据结构>());
+            _默认自定义序列化.Add(new M属性值查询结果Converter());
+            _默认自定义序列化.Add(new M方法执行结果Converter());
+            _默认自定义序列化.Add(new M实参Converter());
         }
 
         public static string 序列化(object obj, params JsonConverter[] __自定义序列化)

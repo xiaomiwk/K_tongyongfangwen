@@ -1,0 +1,79 @@
+/*
+ * Base structure
+ */
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+body {
+    font-family: "helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+}
+
+body .container-fluid {
+    overflow-y: visible;
+    overflow-x: hidden;
+    padding: 0px;
+}
+
+.row {
+    margin: 6px -15px 0px -15px;
+    /*border: 1px solid red;*/
+}
+
+.well {
+    margin-top: 6px;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 15px;
+}
+
+.rowwell {
+            margin-right: 30px;
+}
+
+
+.panel {
+    /*border: 1px solid blue;*/
+    margin-bottom: 6px;
+}
+
+.panel-default {
+    /*border: 1px solid green;*/
+    margin-bottom: 6px;
+}
+
+.table {
+    /*border: 1px solid green;*/
+    margin-bottom: 6px;
+}
+
+.area {
+    border: 1px solid gray;
+    background-color: darkgray;
+}
+
+legend {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 5px;
+    font-size: 15px;
+    line-height: inherit;
+    color: #333;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.form-inline label {
+    font-weight: normal;
+}
+
+.pagination {
+    margin: 0 0 10px 0;
+}
+
+.modal-footer {
+    text-align: left;
+}
+/*.navbar {  
+  min-height: 50px;
+  height: 50px;
+}*/

@@ -1,0 +1,447 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>通用访问</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
+    <!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
+    <!--script src="js/less-1.3.3.min.js"></script-->
+    <!--append ‘#!watch’ to the browser URL, then refresh the page. -->
+
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+  <![endif]-->
+
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/scripts.js"></script>
+
+    <script type="text/javascript">
+        $.ajaxSetup({
+            async: false,
+        });
+        var __query = decodeURI(location.search);
+        var __对象名称 = __query.substr(__query.indexOf("=") + 1);
+        $(document).ready(function () {
+            $("#do刷新").click(刷新属性);
+            //alert(__对象名称);            
+            $.get("object.k", {
+                    对象名称: __对象名称
+                },
+                function (data, status) {
+                    if (status) {
+                        //alert(JSON.stringify(data));
+                        设置属性(data);
+                        $("#方法列表导航").empty();
+                        $("#方法列表容器").empty();
+                        if (data.方法列表.length > 0) {
+                            for (var i = 0; i < data.方法列表.length; i++) {
+                                var __方法 = data.方法列表[i];
+                                var __li = "<li role='presentation'" + ((i == 0) ? " class='active'" : "") + "><a href='#fn" + __方法.名称 + "' id='home-tab' role='tab' data-toggle='tab'>" + __方法.名称 + "</a></li>";
+                                $("#方法列表导航").append(__li);
+                                var __div1 = $("<div role='tabpanel' class='tab-pane fade" + ((i == 0) ? " in active" : "") + "' id='fn" + __方法.名称 + "'>");
+                                var __div2 = $("<div class='row clearfix'></div>");
+                                var __div3 = $("<div class='col-md-1 column'>参数</div>");
+                                var __div4 = $("<div class='col-md-11 column'></div>");
+                                var __table = $("<table class='table table-striped table-hover table-condensed'></table>");
+                                var __thead = $("<thead><tr><th>名称</th><th>类型</th><th>结构</th><th>值</th><th>默认值</th><th>描述</th><th>范围</th></tr></thead>");
+                                var __tbody = $("<tbody id='args" + __方法.名称 + "'></tbody>");
+                                if (__方法.形参列表 != null) {
+                                    for (var j = 0; j < __方法.形参列表.length; j++) {
+                                        var __形参 = __方法.形参列表[j];
+                                        var __tr = $("<tr></tr>");
+                                        __tr.append("<td>" + __形参.名称 + "</td>");
+                                        __tr.append("<td>" + __形参.元数据.类型 + "</td>");
+                                        __tr.append("<td>" + __形参.元数据.结构 + "</td>");
+                                        __tr.append("<td><input type='text' class='form-control' data-name='" + __形参.名称 + "'  data-type='" + __形参.元数据.类型 + "' data-struct='" + __形参.元数据.结构 + "' ></td>");
+                                        __tr.append("<td>" + 过滤null(__形参.元数据.默认值) + "</td>");
+                                        __tr.append("<td>" + 过滤null(__形参.元数据.描述) + "</td>");
+                                        __tr.append("<td>" + 过滤null(__形参.元数据.范围) + "</td>");
+                                        __tbody.append(__tr);
+                                    }
+                                }
+
+                                var __btn执行 = $("<button type='button' class='btn btn-primary' style='margin:10px 0' data-object='" + __对象名称 + "' data-method='" + __方法.名称 + "'>执行</button>");
+                                var __div5 = $("<div class='row clearfix'>");
+                                var __div6 = $("<div class='col-md-1 column'>执行结果</div>");
+                                var __div7 = $("<div class='col-md-11 column'></div>");
+                                var __result = $("<textarea id='result" + __方法.名称 + "' class='form-control' rows='3'></textarea>");
+                                var __return = $("<textarea id='return" + __方法.名称 + "' class='form-control' rows='3' style='display:none'></textarea>");
+                                var __btn解析 = $("<button id='do" + __方法.名称 + "' type='button' class='btn btn-primary' style='margin:10px 0'>解析表结构数据</button>");
+                                __div1.append(__div2);
+                                __div2.append(__div3);
+                                __div2.append(__div4);
+                                __div4.append(__table);
+                                __table.append(__thead);
+                                __table.append(__tbody);
+                                __div4.append(__btn执行);
+                                __div1.append(__div5);
+                                __div5.append(__div6);
+                                __div5.append(__div7);
+                                __div7.append(__result);
+                                __div7.append(__return);
+                                __div7.append(__btn解析);
+                                $("#方法列表容器").append(__div1);
+
+                                __btn执行.click(执行方法);
+                                __btn解析.click(解析返回值);
+                            }
+                        }
+                    }
+                });
+        });
+
+        function 执行方法() {
+            var __对象名称 = $(this).data('object');
+            var __方法名称 = $(this).data('method');
+            $("#result" + __方法名称).val("");
+            $("#return" + __方法名称).val("");
+            var __实参 = "";
+            $("#args" + __方法名称).find("input").each(function () {
+                var __参数类型 = $(this).data("type").toLowerCase();
+                var __参数结构 = $(this).data("struct");
+                var __参数名称 = $(this).data("name");
+                var __参数值 = $(this).val();
+                if(!__参数值){
+                    __参数值 = null;
+                }
+                //console.info("参数类型:" + __参数类型 + "; 参数结构:" + __参数结构);
+                if ((__参数类型 == "string" || __参数类型 == "字符串") && (__参数结构 == "单值" || __参数结构 == "")) {
+                    __实参 += "{\"名称\":\"" + __参数名称 + "\",\"值\":\"" + __参数值 + "\"},";
+                } else {
+                    __实参 += "{\"名称\":\"" + __参数名称 + "\",\"值\":" + __参数值 + "},";
+                }
+            });
+            if (__实参.length > 0) {
+                __实参 = __实参.substr(0, __实参.length - 1);
+            }
+            __实参 = "[" + __实参 + "]";
+            console.info("__实参:" + __实参);
+            $.get("method.k", {
+                    对象名称: __对象名称,
+                    方法名称: __方法名称,
+                    实参列表: __实参
+                },
+                function (data, status) {
+                    if (status) {
+                        var __提示 = (data.成功 ? "成功" : "失败") + "    (" + new Date().toLocaleTimeString() + ")";
+                        if (data.描述) {
+                            __提示 += "\r\n描述:    " + data.描述;
+                        }
+                        if (data.返回值) {
+                            __提示 += "\r\n返回值:    " + JSON.stringify(data.返回值,null,4);
+                        }
+                        $("#result" + __方法名称).val(__提示);
+
+                        $("#return" + __方法名称).val(JSON.stringify(data.返回值));
+                    }
+                });
+        }
+
+        function 刷新属性() {
+            $.get("object.k", {
+                    对象名称: __对象名称
+                },
+                function (data, status) {
+                    if (status) {
+                        //alert(JSON.stringify(data));
+                        设置属性(data);
+                    }
+                });
+        }
+
+        function 设置属性(data) {
+            $("#属性列表").empty();
+            if (data.属性列表.length > 0) {
+                for (var i = 0; i < data.属性列表.length; i++) {
+                    var __属性 = data.属性列表[i];
+                    var __tr = $("<tr></tr>");
+                    __tr.append("<td>" + (i + 1) + "</td>");
+                    __tr.append("<td>" + __属性.名称 + "</td>");
+                    __tr.append("<td>" + (__属性.元数据 == null ? "" : __属性.元数据.类型) + "</td>");
+                    __tr.append("<td>" + (__属性.元数据 == null ? "" : __属性.元数据.结构) + "</td>");
+                    //var __td = $("<td data-detail='" + __属性.值 + "'>" + (__属性.值.length > 200 ? (__属性.值.substr(0, 200) + "...") : __属性.值) + "</td>");
+
+                    $.get("property.k", {
+                            对象名称: __对象名称,
+                            属性名称: __属性.名称
+                        },
+                        function (data, status) {
+                            var __值 = "查询失败";
+                            if (status && data.成功) {
+                                //alert(JSON.stringify(data.返回值));
+                                __值 = JSON.stringify(data.返回值);
+                            }
+
+                            var __td = $("<td data-detail='" + __值 + "'><input type='text' class='form-control' value='" + __值 + "' /></td>");
+                            if (__值 != null && __值.length > 0 && __值[0] == "[" && __值.indexOf("{") > 0) {
+                                __td.click(解析属性);
+                            }
+                            __tr.append(__td);
+                            __tr.append("<td>" + 过滤null(__属性.元数据 == null ? "" : __属性.元数据.描述) + "</td>");
+                            __tr.append("<td>" + 过滤null(__属性.元数据 == null ? "" : __属性.元数据.默认值) + "</td>");
+                            __tr.append("<td>" + 过滤null(__属性.元数据 == null ? "" : __属性.元数据.范围) + "</td>");
+                        });
+
+                    $("#属性列表").append(__tr);
+                }
+            }
+        }
+
+        function 解析返回值() {
+            var __文本 = $(this).parent().find("textarea").last().val();
+            __文本 = __文本.replace(/\\r\\n/g, "");
+            __文本 = __文本.replace(/\\/g, "");
+            if (__文本 != null && __文本.length > 0 && __文本[0] == "[" && __文本.indexOf("{") > 0) {
+                var __json = JSON.parse(__文本);
+                解析表结构(__json);
+            }
+        }
+
+        function 解析属性() {
+            var __json = $(this).data("detail");
+            解析表结构(__json);
+        }
+
+        function 解析表结构(__json) {
+            var __所有列 = new Array();
+            for (var i = 0; i < __json.length; i++) {
+                var __行 = __json[i];
+                for (var __单元格 in __行) {
+                    var __已存在 = false;
+                    for (var j = 0; j < __所有列.length; j++) {
+                        if (__所有列[j] == __单元格) {
+                            __已存在 = true;
+                            break;
+                        }
+                    }
+                    if (!__已存在) {
+                        __所有列.push(__单元格);
+                    }
+                }
+            }
+
+            //创建表格标题
+            var __table = $("<table class='table table-striped table-hover table-condensed'></table>");
+            var __thead = $("<thead><tr></tr></thead>");
+            var __tbody = $("<tbody></tbody>");
+            for (var i = 0; i < __所有列.length; i++) {
+                __thead.append("<th>" + __所有列[i] + "</th>");
+            }
+
+            //生成数据
+            for (var i = 0; i < __json.length; i++) {
+                var __行 = __json[i];
+                var __tr = $("<tr></tr>");
+                for (var j = 0; j < __所有列.length; j++) {
+                    var __列 = __所有列[j];
+                    var __已匹配 = false;
+                    for (var __单元格 in __行) {
+                        //alert(__单元格 + "=" + __行[__单元格]);
+                        if (__单元格 == __列) {
+                            if (__行[__单元格] instanceof Object) {
+                                __tr.append("<td>" + JSON.stringify(__行[__单元格]) + "</td>");
+                            } else {
+                                __tr.append("<td>" + __行[__单元格] + "</td>");
+                            }
+                            __已匹配 = true;
+                            break;
+                        }
+                    }
+                    if (!__已匹配) {
+                        __tr.append("<td></td>");
+                    }
+                }
+                __tbody.append(__tr);
+            }
+
+            $('#表结构 .modal-body').empty();
+            __table.append(__thead);
+            __table.append(__tbody);
+            $('#表结构 .modal-body').append(__table);
+            $('#表结构').modal();
+        }
+
+        function 过滤null(value) {
+            return (value == null) ? "" : value;
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row clearfix">
+            <div class="col-md-12 column" style="min-height:200px; max-height:500px">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width:40px">
+                                #
+                            </th>
+                            <th style="width:120px">
+                                属性名称
+                            </th>
+                            <th style="width:80px">
+                                类型
+                            </th>
+                            <th style="width:50px">
+                                结构
+                            </th>
+                            <th>
+                                值
+                            </th>
+                            <th style="width:120px">
+                                描述
+                            </th>
+                            <th style="width:100px">
+                                默认值
+                            </th>
+                            <th style="width:120px">
+                                范围
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="属性列表">
+                        <tr>
+                            <td>
+                                1
+                            </td>
+                            <td>
+                                xx
+                            </td>
+                            <td>
+                                01/04/2012
+                            </td>
+                            <td>
+                                Default
+                            </td>
+                            <td>
+                                Default
+                            </td>
+                            <td>
+                                Default
+                            </td>
+                            <td>
+                                Default
+                            </td>
+                            <td>
+                                Default
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <button id="do刷新" type="button" class="btn btn-primary" style="margin: 10px 0">刷新</button>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <ul id="方法列表导航" class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab">Home</a>
+                    </li>
+                    <li role="presentation"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab">Profile</a>
+                    </li>
+                </ul>
+                <div id="方法列表容器" class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="home">
+                        <div class="row clearfix">
+                            <div class="col-md-1 column">参数</div>
+                            <div class="col-md-11 column">
+                                <table class="table table-striped table-hover table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:100px">
+                                                名称
+                                            </th>
+                                            <th style="width:60px">
+                                                类型
+                                            </th>
+                                            <th style="width:50px">
+                                                结构
+                                            </th>
+                                            <th>
+                                                值
+                                            </th>
+                                            <th style="width:80px">
+                                                默认值
+                                            </th>
+                                            <th style="width:80px">
+                                                描述
+                                            </th>
+                                            <th style="width:80px">
+                                                范围
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                xx
+                                            </td>
+                                            <td>
+                                                01/04/2012
+                                            </td>
+                                            <td>
+                                                Default
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id="inputEmail3" style="width:150px">
+                                            </td>
+                                            <td>
+                                                Default
+                                            </td>
+                                            <td>
+                                                Default
+                                            </td>
+                                            <td>
+                                                Default
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <button type="button" class="btn btn-primary">执行</button>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-1 column">返回值</div>
+                            <div class="col-md-11 column"></div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="profile">
+                        2
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="表结构" role="dialog">
+        <!--  modal-lg  modal-sm-->
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!--<div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>-->
+                <div class="modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

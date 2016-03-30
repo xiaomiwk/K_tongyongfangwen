@@ -11,7 +11,7 @@ namespace 通用访问
     {
         private Encoding _编码;
 
-        private List<JsonConverter> _自定义序列化 = new List<JsonConverter>();
+        //private List<JsonConverter> _自定义序列化 = new List<JsonConverter>();
 
         public Action<Type, string> 解码拦截;
 
@@ -22,9 +22,6 @@ namespace 通用访问
             报文字典 = __报文字典;
             通道字典 = __优先级字典;
             _编码 = __编码 ?? Encoding.UTF8;
-            _自定义序列化.Add(new M属性值查询结果Converter());
-            _自定义序列化.Add(new M方法执行结果Converter());
-            _自定义序列化.Add(new M实参Converter());
         }
 
         protected override object 解码(Int16 __功能码, byte[] __负载数据)
@@ -35,12 +32,12 @@ namespace 通用访问
             {
                 解码拦截(__类型, __字符串);
             }
-            return HJSON.反序列化(__类型, __字符串, _自定义序列化.ToArray());
+            return HJSON.反序列化(__类型, __字符串);
         }
 
         protected override byte[] 编码(object __负载)
         {
-            var __字符串 = HJSON.序列化(__负载, _自定义序列化.ToArray());
+            var __字符串 = HJSON.序列化(__负载);
             if (编码拦截 != null)
             {
                 编码拦截(__负载, __字符串);

@@ -11,6 +11,8 @@ namespace 通用访问
     {
         int 端口 { get; set; }
 
+        int WebApi端口 { get; set; }
+
         void 添加对象(string 对象名称, Func<M对象> 获取对象);
 
         void 删除对象(string 对象名称);

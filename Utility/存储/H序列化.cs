@@ -199,12 +199,14 @@ namespace Utility.存储
             var __结果 = new List<Tuple<int, int>>();
             __号码列表.Sort();
             var __起始号码 = __号码列表[0];
-            for (int i = 0; i < __号码列表.Count; i++)
+            var __起始索引 = 0;
+            for (int i = 1; i < __号码列表.Count; i++)
             {
-                if (__号码列表[i] > __起始号码 + i)
+                if (__号码列表[i] > __起始号码 + i - __起始索引)
                 {
                     __结果.Add(new Tuple<int, int>(__起始号码, __号码列表[i - 1]));
                     __起始号码 = __号码列表[i];
+                    __起始索引 = i;
                 }
             }
             __结果.Add(new Tuple<int, int>(__起始号码, __号码列表[__号码列表.Count - 1]));
