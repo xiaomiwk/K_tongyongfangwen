@@ -46,6 +46,7 @@ namespace 通用访问.工具
             this.out设备列表.MouseDown += TV_MouseDown;
 
             this.do编辑设备.Click += do编辑设备_Click;
+            this.do折叠.Click += (sender, e1) => this.splitContainer1.Panel1Collapsed = !this.splitContainer1.Panel1Collapsed;
 
             H日志输出.设置(__日志 => H调试.记录(__日志.概要, __日志.等级, __日志.详细, __日志.方法, __日志.文件, __日志.行号));
 

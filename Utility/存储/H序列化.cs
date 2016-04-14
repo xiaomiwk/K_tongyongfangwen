@@ -130,13 +130,14 @@ namespace Utility.存储
             return new JavaScriptSerializer().Serialize(可序列化对象);
         }
 
-        public static T FromJSON字符串<T>(string 字符串, bool 标识类型 = false)
+        public static T FromJSON字符串<T>(string 字符串, bool 标识类型 = false, int __最大长度 = 5000000)
         {
             if (标识类型)
             {
                 return new JavaScriptSerializer(new SimpleTypeResolver()).Deserialize<T>(字符串);
             }
-            return new JavaScriptSerializer().Deserialize<T>(字符串);
+
+            return new JavaScriptSerializer() { MaxJsonLength = __最大长度 }.Deserialize<T>(字符串);
         }
 
         /// <returns>x,x-x,x</returns>

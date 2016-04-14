@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Web;
 using Utility.通用;
 
@@ -21,27 +21,64 @@ namespace Utility.扩展
 
         private HttpListener _监听器;
 
-        private 处理动态请求 _处理方法;
+        private 处理动态请求 _处理动态请求;
 
         private string _动态请求后缀名;
 
-        private string _目录;
+        public Func<string, byte[]> 获取静态文件 { get; set; }
 
-        public void 开启(int __端口, string __动态请求后缀名, 处理动态请求 __处理方法, string __静态文件目录)
+        public HttpSever(int __端口, string __动态请求后缀名, 处理动态请求 __处理方法)
+        {
+            端口 = __端口;
+            _处理动态请求 = __处理方法;
+            _动态请求后缀名 = __动态请求后缀名;
+        }
+
+        public void 使用磁盘文件(string __目录)
+        {
+            获取静态文件 = __文件名 =>
+            {
+                if (!File.Exists(Path.Combine(__目录, __文件名)))
+                {
+                    return new byte[0];
+                }
+                return File.ReadAllBytes(Path.Combine(__目录, __文件名));
+            };
+        }
+
+        /// <summary>
+        /// 将文件"属性"的"生成操作"设置为"嵌入的资源", 
+        /// </summary>
+        /// <param name="__程序集">例如:this.GetType().Assembly</param>
+        /// <param name="__资源路径">例如:通用访问.WebUI</param>
+        /// <returns></returns>
+        public void 使用嵌入资源(Assembly __程序集, string __资源路径)
+        {
+            获取静态文件 = __文件名 =>
+            {
+                var __路径 = string.Format("{0}.{1}", __资源路径, __文件名.Replace('\\', '.'));
+                var __stream = __程序集.GetManifestResourceStream(__路径);
+                if (__stream == null)
+                {
+                    return new byte[0];
+                }
+                var __结果 = new byte[__stream.Length];
+                __stream.Read(__结果, 0, __结果.Length);
+                return __结果;
+            };
+        }
+
+        public void 开启()
         {
             if (!HttpListener.IsSupported)
             {
                 Debug.WriteLine("Windows XP SP2 or Server 2003 is required to use the HttpListener class.");
                 return;
             }
-            if (_监听器.IsListening)
+            if (_监听器 != null && _监听器.IsListening)
             {
                 return;
             }
-            端口 = __端口;
-            _处理方法 = __处理方法;
-            _动态请求后缀名 = __动态请求后缀名;
-            _目录 = __静态文件目录;
 
             _监听器 = new HttpListener();
             _监听器.Prefixes.Add(string.Format("HTTP://localhost:{0}/", 端口));
@@ -50,23 +87,30 @@ namespace Utility.扩展
             __本机IP列表.ForEach(q => _监听器.Prefixes.Add(string.Format("HTTP://{1}:{0}/", 端口, q)));
             _监听器.Start();
             已开启 = true;
-
-            Task.Factory.StartNew(() =>
+            H调试.记录提示("已开启");
+            new Thread(() =>
             {
-                while (_监听器.IsListening)
+                try
                 {
-                    IAsyncResult __凭据 = _监听器.BeginGetContext(处理请求, _监听器);
-                    __凭据.AsyncWaitHandle.WaitOne();
+                    while (_监听器.IsListening)
+                    {
+                        _监听器.BeginGetContext(处理请求, _监听器).AsyncWaitHandle.WaitOne();
+                    }
                 }
-                H调试.记录提示("关闭");
+                catch (Exception ex)
+                {
+                    if (已开启)
+                    {
+                        H调试.记录异常(ex);
+                    }
+                }
                 已开启 = false;
-            });
-            H调试.记录提示("开启");
+            }) { IsBackground = true }.Start();
         }
 
         public bool 已开启 { get; set; }
 
-        public void 处理请求(IAsyncResult __凭据)
+        void 处理请求(IAsyncResult __凭据)
         {
             HttpListenerResponse __响应 = null;
             try
@@ -107,7 +151,7 @@ namespace Utility.扩展
             }
         }
 
-        public static Dictionary<string, string> 获取GET数据(HttpListenerRequest __请求)
+        Dictionary<string, string> 获取GET数据(HttpListenerRequest __请求)
         {
             var __内容 = HttpUtility.UrlDecode(__请求.Url.Query);
             if (string.IsNullOrEmpty(__内容.Trim()))
@@ -134,7 +178,7 @@ namespace Utility.扩展
             return __字典;
         }
 
-        public static Dictionary<string, string> 获取POST数据(HttpListenerRequest __请求)
+        Dictionary<string, string> 获取POST数据(HttpListenerRequest __请求)
         {
             if (!__请求.HasEntityBody)
             {
@@ -169,114 +213,55 @@ namespace Utility.扩展
         public void 关闭()
         {
             H调试.记录提示("关闭");
+            if (_监听器 != null)
+            {
+                _监听器.Close();
+            }
             已开启 = false;
-            _监听器.Close();
         }
 
-        public byte[] 处理Web接收(HttpListenerContext __上下文, string __页面, Dictionary<string, string> __get参数, Dictionary<string, string> __cookie参数, Dictionary<string, string> __post参数)
+        byte[] 处理Web接收(HttpListenerContext __上下文, string __页面, Dictionary<string, string> __get参数, Dictionary<string, string> __cookie参数, Dictionary<string, string> __post参数)
         {
-            //Debug.WriteLine(string.Format("页面: {0}", HttpUtility.UrlDecode(__页面)));
-            //if (__get参数 != null && __get参数.Count > 0)
-            //{
-            //    Debug.WriteLine("get参数");
-            //    foreach (var __kv in __get参数)
-            //    {
-            //        Debug.WriteLine("   {0,-10}: {1}", __kv.Key, __kv.Value);
-            //    }
-            //}
-            //if (__post参数 != null && __post参数.Count > 0)
-            //{
-            //    Debug.WriteLine("post参数");
-            //    foreach (var __kv in __post参数)
-            //    {
-            //        Debug.WriteLine("   {0,-10}: {1}", __kv.Key, __kv.Value);
-            //    }
-            //}
-            //if (__cookie参数 != null && __cookie参数.Count > 0)
-            //{
-            //    Debug.WriteLine("cookie参数");
-            //    foreach (var __kv in __cookie参数)
-            //    {
-            //        Debug.WriteLine("   {0,-10}: {1}", __kv.Key, __kv.Value);
-            //    }
-            //}
-
-            var __文件名 = "";
             if (__页面 == "/")
             {
                 __页面 = "/index.html";
             }
-            __文件名 = __页面.Replace('/', '\\').Remove(0, 1);
+            var __文件名 = __页面.Replace('/', '\\').Remove(0, 1);
             var __最后点位置 = __文件名.LastIndexOf('.');
-            if (__最后点位置 < 0)
-            {
-                if (string.IsNullOrEmpty(_动态请求后缀名))
-                {
-                    return _处理方法(__页面, __get参数, __cookie参数, __post参数);
-                }
-                return new byte[0];
-            }
             var __后缀名 = __文件名.Substring(__最后点位置 + 1);
-            if (__后缀名 == _动态请求后缀名) {
+            if (__最后点位置 < 0 || __后缀名 == _动态请求后缀名)
+            {
                 __上下文.Response.ContentType = "application/json;charset=utf-8";
-                return _处理方法(__页面, __get参数, __cookie参数, __post参数);
+                return _处理动态请求(__页面, __get参数, __cookie参数, __post参数);
+            }
+            if (获取静态文件 == null)
+            {
+                return new byte[0];
             }
             switch (__后缀名)
             {
                 case "png":
                     __上下文.Response.ContentType = "image/png";
-                    if (!File.Exists(Path.Combine(_目录, __文件名)))
-                    {
-                        return new byte[0];
-                    }
-                    return File.ReadAllBytes(Path.Combine(_目录, __文件名));
+                    break;
                 case "gif":
                     __上下文.Response.ContentType = "image/gif";
-                    if (!File.Exists(Path.Combine(_目录, __文件名)))
-                    {
-                        return new byte[0];
-                    }
-                    return File.ReadAllBytes(Path.Combine(_目录, __文件名));
+                    break;
                 case "cur":
                     __上下文.Response.ContentType = "application/octet-stream";
-                    if (!File.Exists(Path.Combine(_目录, __文件名)))
-                    {
-                        return new byte[0];
-                    }
-                    return File.ReadAllBytes(Path.Combine(_目录, __文件名));
+                    break;
                 case "html":
-                    //__上下文.Response.Redirect("index.html");
-                    //break;
                     __上下文.Response.ContentType = "text/html";
-                    return File.ReadAllBytes(Path.Combine(_目录, __文件名));
-               case "css":
-                    if (!File.Exists(Path.Combine(_目录, __文件名)))
-                    {
-                        return 文本编码("<HTML><BODY> 无效地址 </BODY></HTML>");
-                    }
+                    break;
+                case "css":
                     __上下文.Response.ContentType = "text/css;charset=utf-8";
                     break;
                 case "js":
-                    if (!File.Exists(Path.Combine(_目录, __文件名)))
-                    {
-                        return 文本编码("<HTML><BODY> 无效地址 </BODY></HTML>");
-                    }
                     __上下文.Response.ContentType = "application/javascript;charset=utf-8";
                     break;
                 default:
                     return new byte[0];
             }
-            var __文件路径 = Path.Combine(_目录, __文件名);
-            if (!File.Exists(__文件路径))
-            {
-                return new byte[0];
-            }
-            return 文本编码(File.ReadAllText(__文件路径));
-        }
-
-        public byte[] 文本编码(string __内容)
-        {
-            return Encoding.UTF8.GetBytes(__内容);
+            return 获取静态文件(__文件名);
         }
     }
 
@@ -284,11 +269,12 @@ namespace Utility.扩展
     //{
     //    static void Main(string[] args)
     //    {
+    //        var __服务器 = new HttpSever(9999, "j", new H处理请求().处理);
+    //        var __目录 = @"E:\项目--中心网管客户端\中心网管客户端";
     //        //var __目录 = Path.Combine(Path.GetDirectoryName(Assembly.GetCallingAssembly().Location), "WebUI");
     //        //var __目录 = @"C:\Program Files\Apache Software Foundation\Tomcat 8.0\webapps\ROOT";
-    //        var __目录 = @"E:\项目--中心网管客户端\中心网管客户端";
-    //        var __服务器 = new HttpSever();
-    //        __服务器.开启(9999, "j", new H处理请求().处理, __目录);
+    //        __服务器.使用磁盘文件(__目录);
+    //        __服务器.开启();
     //        Console.WriteLine("OK");
     //        Console.ReadLine();
     //        __服务器.关闭();
@@ -309,3 +295,5 @@ namespace Utility.扩展
     //}
 
 }
+
+

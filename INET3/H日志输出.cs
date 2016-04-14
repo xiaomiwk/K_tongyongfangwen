@@ -7,15 +7,12 @@ using System.Text;
 
 namespace System.Runtime.CompilerServices
 {
-    [Diagnostics.CodeAnalysis.SuppressMessage("", "CS1685")]
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class CallerMemberNameAttribute : Attribute { }
 
-    [Diagnostics.CodeAnalysis.SuppressMessage("", "CS1685")]
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class CallerFilePathAttribute : Attribute { }
 
-    [Diagnostics.CodeAnalysis.SuppressMessage("", "CS1685")]
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class CallerLineNumberAttribute : Attribute { }
 }
@@ -46,19 +43,25 @@ namespace INET
 
         public static void 记录(string __概要, string __详细 = null, TraceEventType __等级 = TraceEventType.Verbose, [CallerMemberName]string __方法 = "", [CallerFilePath]string __文件 = "", [CallerLineNumber]int __行号 = 0)
         {
-            Debug.WriteLine("{3,-14} {2,-10}\t{0}\t{1}", __概要, __详细, __等级, DateTime.Now.ToString("HH:mm:ss.FFF"));
-            if (_记录信息 != null && __等级 <= _等级)
+            if (__等级 <= _等级)
             {
-                _记录信息(new M日志{概要 = __概要, 详细 = __详细, 等级 = __等级, 方法 = __方法, 文件 = __文件, 行号 =__行号});
+                Debug.WriteLine("{3,-14} {2,-10}\t{0}\t{1}", __概要, __详细, __等级, DateTime.Now.ToString("HH:mm:ss.FFF"));
+                if (_记录信息 != null)
+                {
+                    _记录信息(new M日志 { 概要 = __概要, 详细 = __详细, 等级 = __等级, 方法 = __方法, 文件 = __文件, 行号 = __行号 });
+                }
             }
         }
 
         public static void 记录(Exception __异常, string __描述 = null, TraceEventType __等级 = TraceEventType.Error, [CallerMemberName]string __方法 = "", [CallerFilePath]string __文件 = "", [CallerLineNumber]int __行号 = 0)
         {
-            Debug.WriteLine("{3,-14} {2,-10}\t{0}\t{1}", __描述, __异常, __等级, DateTime.Now.ToString("HH:mm:ss.FFF"));
-            if (_记录信息 != null && __等级 <= _等级)
+            if (__等级 <= _等级)
             {
-                _记录信息(new M日志 { 异常 = __异常, 概要 = __描述, 等级 = __等级, 方法 = __方法, 文件 = __文件, 行号 = __行号 });
+                Debug.WriteLine("{3,-14} {2,-10}\t{0}\t{1}", __描述, __异常, __等级, DateTime.Now.ToString("HH:mm:ss.FFF"));
+                if (_记录信息 != null)
+                {
+                    _记录信息(new M日志 { 异常 = __异常, 概要 = __描述, 等级 = __等级, 方法 = __方法, 文件 = __文件, 行号 = __行号 });
+                }
             }
         }
     }

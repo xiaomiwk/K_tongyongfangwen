@@ -69,10 +69,9 @@ namespace INET.传输
                 return;
             }
 
-		    if (__数据流.Count < this._消息头长度)
+            if (__数据流.Count < this._消息头长度)
             {
                 H日志输出.记录(string.Format("缓存的字节流长度不足报文头:{0}", BitConverter.ToString(__数据流.ToArray())));
-                __数据流.Clear();
                 return;
             }
 

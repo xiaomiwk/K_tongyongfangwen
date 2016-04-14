@@ -27,8 +27,12 @@ namespace Utility.通用
 
         public static string 日志目录 { get; private set; }
 
-        public static string 查询版本()
+        public static string 查询版本(bool 方法所在程序集 = false)
         {
+            if (方法所在程序集)
+            {
+                return Assembly.GetCallingAssembly().GetName().Version.ToString();
+            }
             return Assembly.GetEntryAssembly().GetName().Version.ToString();
         }
 
@@ -67,7 +71,7 @@ namespace Utility.通用
             H日志.记录异常(__异常, __信息, __内容, __等级, __方法, __文件, __行号);
         }
 
-        public static void 初始化(string __日志目录 = "日志", int __保留天数 = 30)
+        public static void 初始化(TraceEventType __日志级别 = TraceEventType.Verbose, string __日志目录 = "日志", string __日志文件名称 = "", int __保留天数 = 30)
         {
             if (_已初始化)
             {
@@ -75,7 +79,7 @@ namespace Utility.通用
             }
             _已初始化 = true;
 
-            H日志.初始化(__日志目录, TraceEventType.Verbose);
+            H日志.初始化(__日志级别, __日志目录, __日志文件名称);
             日志目录 = __日志目录;
 
             var __环境信息 = new Dictionary<string, object>();
@@ -90,7 +94,10 @@ namespace Utility.通用
             __环境信息["CurrentDirectory"] = Environment.CurrentDirectory;
             记录提示("程序启动", H序列化.ToJSON字符串(__环境信息));
 
-            清除过期调试文件(日志目录, __保留天数);
+            if (__保留天数 != int.MaxValue)
+            {
+                清除过期调试文件(日志目录, __保留天数);
+            }
 
             if (处理异常)
             {

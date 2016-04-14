@@ -28,17 +28,16 @@ namespace Utility.存储
 
         public static string 获取绝对路径(string 路径, bool 方法所在程序集 = false)
         {
+            if (路径.Contains(':'))
+            {
+                return 路径;
+            }
             var __相对路径 = 程序目录;
             if (方法所在程序集)
             {
                 __相对路径 = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             }
-            var __路径 = 路径;
-            if (!__路径.Contains(':'))
-            {
-                __路径 = Path.Combine(__相对路径, 路径);
-            }
-            return __路径;
+            return Path.Combine(__相对路径, 路径);
         }
 
         public static bool 验证目录是否存在(string 目录路径, bool 方法所在程序集 = false)

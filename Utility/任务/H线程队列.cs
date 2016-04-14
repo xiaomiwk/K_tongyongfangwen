@@ -166,6 +166,9 @@ namespace Utility.任务
                     __日志.AppendFormat("平均处理耗时 {0} 毫秒,", _总耗时 / _数量);
                     __日志.AppendFormat("平均延迟 {0},", _总延时 / _数量);
                     H日志.记录("统计", _总延时 / _数量 > _延迟阈值 ? TraceEventType.Warning : TraceEventType.Information, __日志.ToString());
+                    Interlocked.Exchange(ref _数量, 0);
+                    Interlocked.Exchange(ref _总耗时, 0);
+                    Interlocked.Exchange(ref _总延时, 0);
                 }
                 if (__耗时 > _耗时阈值)
                 {

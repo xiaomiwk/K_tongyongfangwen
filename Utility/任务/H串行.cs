@@ -5,60 +5,35 @@ using Utility.通用;
 
 namespace Utility.任务
 {
-    public static class H串行
+    public class H串行
     {
-        static Task _外部任务;
+        Task _外部任务;
 
-        static readonly object _任务同步 = new object();
+        readonly object _任务同步 = new object();
 
-        private static TaskScheduler _调度服务;
+        public TaskScheduler 调度服务 { get; set; }
 
-        static H串行()
+        public H串行()
         {
-            _外部任务 = new Task(() => { }, TaskCreationOptions.PreferFairness);
-            _外部任务.Start();
+            调度服务 = TaskScheduler.Default;
+            _外部任务 = Task.Factory.StartNew(() => { });
         }
 
-        public static void 初始化(TaskScheduler __调度服务)
-        {
-            _调度服务 = __调度服务;
-        }
-
-        public static void 执行(Action __动作)
+        public void 执行(Action __动作)
         {
             lock (_任务同步)
             {
                 _外部任务 = _外部任务.ContinueWith(q =>
                 {
-                    __动作();
-                }, CancellationToken.None, TaskContinuationOptions.PreferFairness, _调度服务);
-                _外部任务 = _外部任务.ContinueWith(task =>
-                {
-                    if (task.Exception != null)
+                    try
                     {
-                        H异常.处理UI线程(task.Exception.GetBaseException());
-                        task.Exception.Handle(q => true);
+                        __动作();
                     }
-                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, _调度服务);
-            }
-        }
-
-        public static void 执行(Action<object> __动作, object __参数)
-        {
-            lock (_任务同步)
-            {
-                _外部任务 = _外部任务.ContinueWith(q =>
-                {
-                    __动作(__参数);
-                }, CancellationToken.None, TaskContinuationOptions.PreferFairness, _调度服务);
-                _外部任务 = _外部任务.ContinueWith(task =>
-                {
-                    if (task.Exception != null)
+                    catch (Exception ex)
                     {
-                        H异常.处理UI线程(task.Exception.GetBaseException());
-                        task.Exception.Handle(q => true);
+                        H日志.记录异常(ex);
                     }
-                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, _调度服务);
+                }, CancellationToken.None, TaskContinuationOptions.None, 调度服务);
             }
         }
     }

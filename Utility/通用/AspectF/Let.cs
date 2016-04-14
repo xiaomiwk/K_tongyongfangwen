@@ -30,18 +30,7 @@ namespace Utility.通用
         public Let()
         {
             Chain = null;
-            Logger = () => new Logger();
-            Cache = () => new Cache();
         }
-
-        /// <summary>
-        /// Gets and sets the <see cref="ILogger"/> instance and used when <see cref="ILogger"/> is not passed with <see cref="Let"/> class methods
-        /// </summary>
-        public static Func<ILogger> Logger { get; set; }
-        /// <summary>
-        /// Gets and sets the <see cref="ICache"/> instance and used when <see cref="ICache"/> is not passed with <see cref="Let"/> class methods
-        /// </summary>
-        public static Func<ICache> Cache { get; set; }
 
         /// <summary>
         /// Create a composition of function e.g. f(g(x))

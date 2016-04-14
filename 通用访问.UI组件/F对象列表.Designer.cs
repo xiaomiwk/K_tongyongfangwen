@@ -62,6 +62,7 @@
             this.do客户.Text = "客户";
             this.do客户.UseVisualStyleBackColor = false;
             this.do客户.大小 = new System.Drawing.Size(40, 23);
+            this.do客户.文字颜色 = System.Drawing.Color.White;
             this.do客户.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // do开发
@@ -77,6 +78,7 @@
             this.do开发.Text = "开发";
             this.do开发.UseVisualStyleBackColor = false;
             this.do开发.大小 = new System.Drawing.Size(40, 23);
+            this.do开发.文字颜色 = System.Drawing.Color.White;
             this.do开发.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // do工程
@@ -92,6 +94,7 @@
             this.do工程.Text = "工程";
             this.do工程.UseVisualStyleBackColor = false;
             this.do工程.大小 = new System.Drawing.Size(40, 23);
+            this.do工程.文字颜色 = System.Drawing.Color.White;
             this.do工程.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // out提示
@@ -121,6 +124,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.Gray;
             this.label7.Location = new System.Drawing.Point(13, 9);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(56, 17);
@@ -177,6 +181,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Gray;
             this.label2.Location = new System.Drawing.Point(-4, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 17);
@@ -197,6 +202,7 @@
             this.do断开设备.TabIndex = 22;
             this.do断开设备.UseVisualStyleBackColor = false;
             this.do断开设备.大小 = new System.Drawing.Size(20, 20);
+            this.do断开设备.文字颜色 = System.Drawing.Color.White;
             this.do断开设备.颜色 = System.Drawing.Color.White;
             // 
             // out对象菜单

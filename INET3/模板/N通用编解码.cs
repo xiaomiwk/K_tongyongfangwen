@@ -23,9 +23,9 @@ namespace INET.模板
     {
         public int 消息头长度 = 6;
 
-        public byte[] _消息头标识 = { 0xAA, 0xAA };
+        public byte[] 消息头标识 = { 0xAA, 0xAA };
 
-        public Func<byte[], int> 解码消息长度 = q => IPAddress.NetworkToHostOrder(BitConverter.ToInt32(q, 2));
+        public Func<byte[], int> 解码消息长度;
 
         public Dictionary<Int16, Type> 报文字典 { get; set; }
 
@@ -33,6 +33,17 @@ namespace INET.模板
 
         public N通用编解码()
         {
+            解码消息长度 = q =>
+            {
+                for (int i = 0; i < 消息头标识.Length; i++)
+                {
+                    if (q[i] != 消息头标识[i])
+                    {
+                        return -1;
+                    }
+                }
+                return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(q, 2));
+            };
         }
 
         public N通用编解码(Dictionary<Int16, Type> __报文字典, Dictionary<Int16, string> __通道字典)
@@ -44,15 +55,7 @@ namespace INET.模板
         public Tuple<N事务, object> 解码(byte[] 数据)
         {
             var __解码 = new H字段解码(数据);
-            var __消息头标识 = __解码.解码字节数组(_消息头标识.Length);
-            for (int i = 0; i < __消息头标识.Length; i++)
-            {
-                if (_消息头标识[i] != __消息头标识[i])
-                {
-                    throw new ApplicationException("报文传输层异常");
-                }
-            }
-            var __消息长度 = __解码.解码Int32();
+            var __消息头 = __解码.解码字节数组(消息头长度);
             var __功能码 = __解码.解码Int16();
             if (!报文字典.ContainsKey(__功能码))
             {
@@ -78,7 +81,7 @@ namespace INET.模板
             var __消息内容 = 编码(负载);
             var __消息内容长度 = 10 + __消息内容.Length;
             var __编码 = new H字段编码();
-            __编码.编码字段(_消息头标识, __消息内容长度, __功能码, 事务.发方事务, 事务.收方事务, __消息内容);
+            __编码.编码字段(消息头标识, __消息内容长度, __功能码, 事务.发方事务, 事务.收方事务, __消息内容);
             return __编码.获取结果();
         }
 

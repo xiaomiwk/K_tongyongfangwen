@@ -96,6 +96,7 @@
             this.do执行.Text = "执行";
             this.do执行.UseVisualStyleBackColor = false;
             this.do执行.大小 = new System.Drawing.Size(100, 26);
+            this.do执行.文字颜色 = System.Drawing.Color.White;
             this.do执行.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // do解析
@@ -112,6 +113,7 @@
             this.do解析.Text = "解析";
             this.do解析.UseVisualStyleBackColor = false;
             this.do解析.大小 = new System.Drawing.Size(100, 26);
+            this.do解析.文字颜色 = System.Drawing.Color.White;
             this.do解析.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // out值
@@ -209,6 +211,7 @@
             this.do导出.Text = "导出";
             this.do导出.UseVisualStyleBackColor = false;
             this.do导出.大小 = new System.Drawing.Size(100, 26);
+            this.do导出.文字颜色 = System.Drawing.Color.White;
             this.do导出.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // out返回值
@@ -237,6 +240,7 @@
             this.do清空.Text = "清空";
             this.do清空.UseVisualStyleBackColor = false;
             this.do清空.大小 = new System.Drawing.Size(100, 26);
+            this.do清空.文字颜色 = System.Drawing.Color.White;
             this.do清空.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // do解析2
@@ -253,6 +257,7 @@
             this.do解析2.Text = "解析";
             this.do解析2.UseVisualStyleBackColor = false;
             this.do解析2.大小 = new System.Drawing.Size(100, 26);
+            this.do解析2.文字颜色 = System.Drawing.Color.White;
             this.do解析2.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // label4
@@ -268,6 +273,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Gray;
             this.label2.Location = new System.Drawing.Point(1, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 17);

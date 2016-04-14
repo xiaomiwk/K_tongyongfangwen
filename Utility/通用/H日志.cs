@@ -40,12 +40,15 @@ namespace Utility.通用
 
         public static string 日志目录 { get; private set; }
 
+        public static string 文件名称 { get; private set; }
+
         public static TraceEventType 输出级别 { get; set; }
 
-        public static void 初始化(string __日志目录 = "日志", TraceEventType __输出级别 = TraceEventType.Verbose)
+        public static void 初始化(TraceEventType __输出级别 = TraceEventType.Verbose, string __日志目录 = "日志", string __文件名称 = null)
         {
             输出级别 = __输出级别;
             日志目录 = __日志目录;
+            文件名称 = __文件名称;
             配置日志文件输出();
         }
 
@@ -144,12 +147,19 @@ namespace Utility.通用
         {
             var __程序集 = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
             var __程序集名称 = __程序集.GetName();
-            var __日志名称 = __程序集名称.Name + "  " + __程序集名称.Version + "  ";
+            if (string.IsNullOrEmpty(文件名称))
+            {
+                文件名称 = __程序集名称.Name + "  " + __程序集名称.Version;
+            }
+            if (string.IsNullOrEmpty(日志目录))
+            {
+                日志目录 = "日志";
+            }
             详细日志 = new H写文件("详细日志")
             {
                 Append = true,
                 AutoFlush = true,
-                BaseFileName = __日志名称 + "详细日志",
+                BaseFileName = 文件名称 + "  详细日志",
                 Location = LogFileLocation.Custom,
                 CustomLocation = H路径.获取绝对路径(日志目录, true),
                 Delimiter = " || ",
@@ -164,7 +174,7 @@ namespace Utility.通用
             {
                 Append = true,
                 AutoFlush = true,
-                BaseFileName = __日志名称 + "错误日志",
+                BaseFileName = 文件名称 + "  错误日志",
                 Location = LogFileLocation.Custom,
                 CustomLocation = H路径.获取绝对路径(日志目录, true),
                 Delimiter = " || ",

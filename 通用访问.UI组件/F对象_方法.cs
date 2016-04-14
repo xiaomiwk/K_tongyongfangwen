@@ -159,7 +159,7 @@ namespace 通用访问.UI组件
         public void 设置返回值(string __返回值)
         {
             var __数据结构 = _方法.返回值元数据 == null ? HJSON.识别数据结构(__返回值) : _方法.返回值元数据.结构;
-            this.out返回值.Text = string.Format("成功   ({1})\r\n返回值: {0}", __返回值, DateTime.Now.ToLongTimeString());
+            this.out返回值.Text = string.Format("成功   ({1})\r\n{0}", __返回值, DateTime.Now.ToLongTimeString());
             if (__数据结构 == E数据结构.单值)
             {
             }

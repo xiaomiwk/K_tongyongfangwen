@@ -54,12 +54,19 @@ namespace 通用访问.服务端
             {
                 while (_监听器.IsListening)
                 {
-                    IAsyncResult __凭据 = _监听器.BeginGetContext(处理请求, _监听器);
-                    //Debug.WriteLine("Waiting for request to be processed asyncronously.");
-                    __凭据.AsyncWaitHandle.WaitOne();
-                    //Debug.WriteLine("Request processed asyncronously.");
+                    try
+                    {
+                        _监听器.BeginGetContext(处理请求, _监听器).AsyncWaitHandle.WaitOne();
+                    }
+                    catch (Exception ex)
+                    {
+                        if (已开启)
+                        {
+                            H日志输出.记录(ex);
+                        }
+                    }
                 }
-                Debug.WriteLine("BWebApi 已关闭");
+                Debug.WriteLine("BWebApi 已退出");
                 已开启 = false;
             }) { IsBackground = true }.Start();
         }
@@ -96,7 +103,10 @@ namespace 通用访问.服务端
             }
             catch (Exception ex)
             {
-                H日志输出.记录(ex);
+                if (已开启)
+                {
+                    H日志输出.记录(ex);
+                }
             }
             finally
             {
@@ -177,12 +187,11 @@ namespace 通用访问.服务端
 
         byte[] 处理Web接收(HttpListenerContext __上下文, string __页面, Dictionary<string, string> __get参数, Dictionary<string, string> __cookie参数, Dictionary<string, string> __post参数)
         {
-            var __文件名 = "";
             if (__页面 == "/")
             {
                 __页面 = "/index.html";
             }
-            __文件名 = __页面.Replace('/', '\\').Remove(0, 1);
+            var __文件名 = __页面.Replace('/', '\\').Remove(0, 1);
             var __最后点位置 = __文件名.LastIndexOf('.');
             if (__最后点位置 < 0)
             {
@@ -205,7 +214,7 @@ namespace 通用访问.服务端
                 case "k":
                     Debug.WriteLine(string.Format("页面: {0}", HttpUtility.UrlDecode(__页面)));
                     __上下文.Response.ContentType = "application/json;charset=utf-8";
-                    var __发送 = "";
+                    string __发送;
                     switch (__文件名)
                     {
                         case "login.k":

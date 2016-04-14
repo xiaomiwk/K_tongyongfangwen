@@ -26,12 +26,23 @@ namespace INET.模板
 
         public byte[] 消息头标识 = { 0xAA, 0xAA };
 
-        public Func<byte[], int> 解码消息长度 = q => IPAddress.NetworkToHostOrder(BitConverter.ToInt32(q, 2));
+        public Func<byte[], int> 解码消息长度;
 
         public Dictionary<string, string> 通道字典 { get; set; }
 
         public N自描述编解码()
         {
+            解码消息长度 = q =>
+            {
+                for (int i = 0; i < 消息头标识.Length; i++)
+                {
+                    if (q[i] != 消息头标识[i])
+                    {
+                        return -1;
+                    }
+                }
+                return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(q, 2));
+            };
         }
 
         public N自描述编解码(Dictionary<string, string> __通道字典)
@@ -53,15 +64,7 @@ namespace INET.模板
         public Tuple<N事务, object> 解码(byte[] __数据)
         {
             var __解码 = new H字段解码(__数据);
-            var __消息头标识 = __解码.解码字节数组(消息头标识.Length);
-            for (int i = 0; i < __消息头标识.Length; i++)
-            {
-                if (消息头标识[i] != __消息头标识[i])
-                {
-                    throw new ApplicationException("报文传输层异常");
-                }
-            }
-            var __消息长度 = __解码.解码Int32();
+            var __消息头 = __解码.解码字节数组(消息头长度);
             var __发方事务 = __解码.解码Int32();
             var __收方事务 = __解码.解码Int32();
             var __功能码长度 = __解码.解码Int16();

@@ -48,7 +48,7 @@ namespace 通用访问.工具
             this.out设备列表.MouseDown += TV_MouseDown;
 
             this.do编辑设备.Click += do编辑设备_Click;
-
+            this.do折叠.Click += (sender, e1) => this.splitContainer1.Panel1Collapsed = !this.splitContainer1.Panel1Collapsed;
             //加载设备列表
             加载设备列表();
 

@@ -11,59 +11,36 @@ namespace Utility.通用
     public static class AspectExtensions
     {
         [DebuggerStepThrough]
-        public static void DoNothing()
-        {
-        }
-
-        [DebuggerStepThrough]
-        public static void DoNothing(params object[] whatever)
-        {
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF Retry(this AspectF aspects, int retryDuration,
-                                    int retryCount, Action<Exception> errorHandler, Action<IEnumerable<Exception>> retryFailed, ILogger logger)
-        {
-            return aspects.Combine(work =>
-                                   Retry(retryDuration, retryCount, errorHandler, retryFailed, work, logger));
-        }
-
-        [DebuggerStepThrough]
         public static AspectF Retry(this AspectF aspects, int retryDuration,
                                     int retryCount, Action<Exception> errorHandler, Action<IEnumerable<Exception>> retryFailed)
         {
-            return Retry(aspects, retryDuration, retryCount, errorHandler, retryFailed, Let.Logger());
-        }
-
-        [DebuggerStepThrough]
-        public static void Retry(int retryDuration, int retryCount,
-                                 Action<Exception> errorHandler, Action<IEnumerable<Exception>> retryFailed, Action work, ILogger logger)
-        {
-            List<Exception> errors = null;
-            do
+            return aspects.Combine(work =>
             {
-                try
+                List<Exception> errors = null;
+                do
                 {
-                    work();
-                    return;
-                }
-                catch (Exception x)
-                {
-                    if (null == errors)
-                        errors = new List<Exception>();
-                    errors.Add(x);
-                    logger.LogException(x);
-                    if (errorHandler != null)
+                    try
                     {
-                        errorHandler(x);
+                        work();
+                        return;
                     }
-                    System.Threading.Thread.Sleep(retryDuration);
+                    catch (Exception x)
+                    {
+                        if (null == errors)
+                            errors = new List<Exception>();
+                        errors.Add(x);
+                        if (errorHandler != null)
+                        {
+                            errorHandler(x);
+                        }
+                        System.Threading.Thread.Sleep(retryDuration);
+                    }
+                } while (retryCount-- > 0);
+                if (retryFailed != null)
+                {
+                    retryFailed(errors);
                 }
-            } while (retryCount-- > 0);
-            if (retryFailed != null)
-            {
-                retryFailed(errors);
-            }
+            });
         }
 
         [DebuggerStepThrough]
@@ -74,6 +51,27 @@ namespace Utility.通用
                                           System.Threading.Thread.Sleep(milliseconds);
                                           work();
                                       });
+        }
+
+        [DebuggerStepThrough]
+        public static AspectF DelayAfter(this AspectF aspect, int timespan, Action<int> __记录耗时 = null)
+        {
+            return aspect.Combine(work =>
+            {
+                var __秒表 = new Stopwatch();
+                __秒表.Start();
+                work();
+                __秒表.Stop();
+                var __休眠 = timespan - (int)__秒表.Elapsed.TotalMilliseconds;
+                if (__记录耗时 != null)
+                {
+                    __记录耗时((int)__秒表.Elapsed.TotalMilliseconds);
+                }
+                if (__休眠 > 0)
+                {
+                    Thread.Sleep(__休眠);
+                }
+            });
         }
 
         [DebuggerStepThrough]
@@ -147,275 +145,33 @@ namespace Utility.通用
         }
 
         [DebuggerStepThrough]
-        public static AspectF Log(this AspectF aspect, ILogger logger,
-                                  string logMessage, params object[] arg)
-        {
-            return aspect.Combine(work =>
-                                      {
-                                          logger.Log(string.Format(logMessage, arg));
-
-                                          work();
-                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF Log(this AspectF aspect,
-                                  string logMessage, params object[] arg)
-        {
-            return Log(aspect, Let.Logger(), logMessage, arg);
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF Log(this AspectF aspect, ILogger logger,
-                                  string beforeMessage, string afterMessage)
-        {
-            return aspect.Combine(work =>
-                                      {
-                                          logger.Log(beforeMessage);
-
-                                          work();
-
-                                          logger.Log(afterMessage);
-                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF Log(this AspectF aspect,
-                                  string beforeMessage, string afterMessage)
-        {
-            return Log(aspect, Let.Logger(), beforeMessage, afterMessage);
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF HowLong(this AspectF aspect, ILogger logger,
-                                      string startMessage, string endMessage)
+        public static AspectF HowLong(this AspectF aspect, Action<TimeSpan> action)
         {
             return aspect.Combine(work =>
                                       {
                                           DateTime start = DateTime.Now;
-                                          logger.Log(startMessage);
 
                                           work();
 
                                           DateTime end = DateTime.Now.ToUniversalTime();
-                                          TimeSpan duration = end - start;
-
-                                          logger.Log(string.Format(endMessage, duration.TotalMilliseconds,
-                                                                   duration.TotalSeconds, duration.TotalMinutes, duration.TotalHours,
-                                                                   duration.TotalDays));
+                                          action(end - start);
                                       });
         }
 
         [DebuggerStepThrough]
-        public static AspectF HowLong(this AspectF aspect,
-                                      string startMessage, string endMessage)
-        {
-            return HowLong(aspect, Let.Logger(), startMessage, endMessage);
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF TrapLog(this AspectF aspect, ILogger logger)
-        {
-            return aspect.Combine(work =>
-                                      {
-                                          try
-                                          {
-                                              work();
-                                          }
-                                          catch (Exception x)
-                                          {
-                                              logger.LogException(x);
-                                          }
-                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF TrapLog(this AspectF aspect)
-        {
-            return TrapLog(aspect, Let.Logger());
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF TrapLogThrow(this AspectF aspect, ILogger logger)
-        {
-            return aspect.Combine(work =>
-                                      {
-                                          try
-                                          {
-                                              work();
-                                          }
-                                          catch (Exception x)
-                                          {
-                                              logger.LogException(x);
-                                              throw;
-                                          }
-                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF TrapLogThrow(this AspectF aspect)
-        {
-            return TrapLogThrow(aspect, Let.Logger());
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF RunAsync(this AspectF aspect, Action completeCallback)
+        public static AspectF RunAsync(this AspectF aspect, Action completeCallback = null)
         {
             return aspect.Combine(work => work.BeginInvoke(asyncresult =>
                                                                {
-                                                                   work.EndInvoke(asyncresult); completeCallback();
+                                                                   work.EndInvoke(asyncresult);
+                                                                   if (completeCallback != null)
+                                                                   {
+                                                                       completeCallback();
+                                                                   }
                                                                }, null));
         }
 
-        [DebuggerStepThrough]
-        public static AspectF RunAsync(this AspectF aspect)
-        {
-            return aspect.Combine(work => work.BeginInvoke(work.EndInvoke, null));
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF Cache<TReturnType>(this AspectF aspect,
-                                                 ICache cacheResolver, string key)
-        {
-            return aspect.Combine(work => Cache<TReturnType>(aspect, cacheResolver, key, work, cached => cached));
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF Cache<TReturnType>(this AspectF aspect,
-                                                 string key)
-        {
-            return Cache<TReturnType>(aspect, Let.Cache(), key);
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF CacheList<TItemType, TListType>(this AspectF aspect,
-                                                              ICache cacheResolver, string listCacheKey, Func<TItemType, string> getItemKey)
-            where TListType : IList<TItemType>, new()
-        {
-            return aspect.Combine(work =>
-                                      {
-                                          var workDelegate = aspect.WorkDelegate as Func<TListType>;
-
-                                          // Replace the actual work delegate with a new delegate so that
-                                          // when the actual work delegate returns a collection, each item
-                                          // in the collection is stored in cache individually.
-                                          Func<TListType> newWorkDelegate = () =>
-                                                                                {
-                                                                                    if (workDelegate != null)
-                                                                                    {
-                                                                                        TListType collection = workDelegate();
-                                                                                        foreach (TItemType item in collection)
-                                                                                        {
-                                                                                            string key = getItemKey(item);
-                                                                                            cacheResolver.Set(key, item);
-                                                                                        }
-                                                                                        return collection;
-                                                                                    }
-                                                                                    return default(TListType);
-                                                                                };
-                                          aspect.WorkDelegate = newWorkDelegate;
-
-                                          // Get the collection from cache or real source. If collection is returned
-                                          // from cache, resolve each item in the collection from cache
-                                          Cache<TListType>(aspect, cacheResolver, listCacheKey, work,
-                                                           cached =>
-                                                               {
-                                                                   // Get each item from cache. If any of the item is not in cache
-                                                                   // then discard the whole collection from cache and reload the 
-                                                                   // collection from source.
-                                                                   var itemList = new TListType();
-                                                                   foreach (object cachedItem in cached.Select(item => cacheResolver.Get(getItemKey(item))))
-                                                                   {
-                                                                       if (null != cachedItem)
-                                                                       {
-                                                                           itemList.Add((TItemType)cachedItem);
-                                                                       }
-                                                                       else
-                                                                       {
-                                                                           // One of the item is missing from cache. So, discard the 
-                                                                           // cached list.
-                                                                           return default(TListType);
-                                                                       }
-                                                                   }
-
-                                                                   return itemList;
-                                                               });
-                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF CacheList<TItemType, TListType>(this AspectF aspect,
-                                                              string listCacheKey, Func<TItemType, string> getItemKey)
-            where TListType : IList<TItemType>, new()
-        {
-            return CacheList<TItemType, TListType>(aspect, Let.Cache(), listCacheKey, getItemKey);
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF CacheRetry<TReturnType>(this AspectF aspect,
-                                                      ICache cacheResolver,
-                                                      ILogger logger,
-                                                      string key)
-        {
-            return aspect.Combine(work =>
-                                      {
-                                          try
-                                          {
-                                              Cache<TReturnType>(aspect, cacheResolver, key, work, cached => cached);
-                                          }
-                                          catch (Exception x)
-                                          {
-                                              logger.LogException(x);
-                                              System.Threading.Thread.Sleep(1000);
-
-                                              //Retry
-                                              try
-                                              {
-                                                  Cache<TReturnType>(aspect, cacheResolver, key, work, cached => cached);
-                                              }
-                                              catch (Exception ex)
-                                              {
-                                                  logger.LogException(ex);
-                                                  throw;
-                                              }
-                                          }
-                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF CacheRetry<TReturnType>(this AspectF aspect,
-                                                      string key)
-        {
-            return CacheRetry<TReturnType>(aspect, Let.Cache(), Let.Logger(), key);
-        }
-
-        private static void Cache<TReturnType>(AspectF aspect, ICache cacheResolver,
-                                               string key, Action work, Func<TReturnType, TReturnType> foundInCache)
-        {
-            object cachedData = cacheResolver.Get(key);
-            if (cachedData == null)
-            {
-                GetListFromSource<TReturnType>(aspect, cacheResolver, key);
-            }
-            else
-            {
-                // Give caller a chance to shape the cached item before it is returned
-                TReturnType cachedType = foundInCache((TReturnType)cachedData);
-                if (cachedType == null)
-                {
-                    GetListFromSource<TReturnType>(aspect, cacheResolver, key);
-                }
-                else
-                {
-                    aspect.WorkDelegate = new Func<TReturnType>(() => cachedType);
-                }
-            }
-
-            work();
-        }
-
-        public static AspectF Expected<TException>(this AspectF aspect)
-            where TException : Exception
+        public static AspectF Expected<TException>(this AspectF aspect) where TException : Exception
         {
             return aspect.Combine(work =>
                                       {
@@ -442,19 +198,6 @@ namespace Utility.通用
                                       });
         }
 
-        private static void GetListFromSource<TReturnType>(AspectF aspect, ICache cacheResolver,
-                                                           string key)
-        {
-            var workDelegate = aspect.WorkDelegate as Func<TReturnType>;
-            if (workDelegate != null)
-            {
-                TReturnType realObject = workDelegate();
-                cacheResolver.Add(key, realObject);
-                workDelegate = () => realObject;
-            }
-            aspect.WorkDelegate = workDelegate;
-        }
-
         /// <summary>
         /// Returns the instance of old object with new operations applied on.
         /// </summary>
@@ -471,27 +214,6 @@ namespace Utility.通用
                                          action(item);
                                          return item;
                                      });
-        }
-
-        [DebuggerStepThrough]
-        public static AspectF DoAndSleep(this AspectF aspect, int timespan, Action<int> __记录耗时 = null)
-        {
-            return aspect.Combine(work =>
-            {
-                var __秒表 = new Stopwatch();
-                __秒表.Start();
-                work();
-                __秒表.Stop();
-                var __休眠 = timespan - (int)__秒表.Elapsed.TotalMilliseconds;
-                if (__记录耗时 != null)
-                {
-                    __记录耗时((int)__秒表.Elapsed.TotalMilliseconds);
-                }
-                if (__休眠 > 0)
-                {
-                    Thread.Sleep(__休眠);
-                }
-            });
         }
 
     }
