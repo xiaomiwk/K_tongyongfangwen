@@ -36,6 +36,10 @@
     <ApplicationIcon>K.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="INET3, Version=1.16.330.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LIB\INET3.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\资源\Newtonsoft.Json.dll</HintPath>
@@ -50,6 +54,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Utility, Version=1.16.330.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LIB\Utility.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="F主窗口.cs">
@@ -87,14 +95,6 @@
     <None Include="Resources\K.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\INET3\INET3.csproj">
-      <Project>{56d6cb6d-e9b9-4361-b487-cfb87b508653}</Project>
-      <Name>INET3</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utility\Utility.csproj">
-      <Project>{c56e903b-f745-4e12-a01b-90e915e04968}</Project>
-      <Name>Utility</Name>
-    </ProjectReference>
     <ProjectReference Include="..\通用访问.UI组件\通用访问.UI组件.csproj">
       <Project>{0cfb04ab-88c7-4e49-8b65-869dd246fb17}</Project>
       <Name>通用访问.UI组件</Name>

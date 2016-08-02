@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="INET3, Version=1.16.330.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LIB\INET3.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\LIB\Newtonsoft.Json.dll</HintPath>
@@ -84,12 +88,6 @@
     <Compile Include="自定义序列化\M实参Converter.cs" />
     <Compile Include="自定义序列化\M属性值查询结果Converter.cs" />
     <Compile Include="自定义序列化\M方法执行结果Converter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\INET3\INET3.csproj">
-      <Project>{56d6cb6d-e9b9-4361-b487-cfb87b508653}</Project>
-      <Name>INET3</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WebUI\css\bootstrap.css" />
