@@ -73,12 +73,6 @@ namespace Utility.Windows
         /// <returns></returns>
         public static int 查询系统内存总量()
         {
-            //if (_计数器 == null)
-            //{
-            //    _计数器 = new PerformanceCounter("Memory", "Available MBytes");
-            //}
-            //return (int)_计数器.NextValue();
-
             var __ComputerInfo = new ComputerInfo();
             return (int)(__ComputerInfo.TotalPhysicalMemory / 1024 / 1024);
         }

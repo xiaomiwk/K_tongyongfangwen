@@ -24,8 +24,6 @@ namespace INET.传输
 
         E传输层协议 协议 { get; }
 
-        E流分割方式 分割方式 { get; }
-
         DateTime 开启时间 { get; }
 
         /// <summary>
@@ -39,7 +37,7 @@ namespace INET.传输
         int 接收缓冲区大小 { get; set; }
 
         /// <summary>
-        /// 默认为5k。当接收到的消息尺寸超过"最大消息长度"时，将会丢弃数据（对UDP）。
+        /// 默认为100k。当接收到的消息尺寸超过"最大消息长度"时，将会丢弃数据（对UDP）。
         /// </summary>
         int 最大消息长度 { get; set; }
 
@@ -49,12 +47,12 @@ namespace INET.传输
         void 开启();
 
         /// <summary>
-        /// 向指定的端点发送UDP消息。注意：如果引擎已经停止，则直接返回。
+        /// 向指定的端点发送消息。注意：如果引擎已经停止，则直接返回。
         /// </summary>
         void 同步发送(IPEndPoint __接收地址, byte[] __消息);
 
         /// <summary>
-        /// 向指定的端点投递UDP消息。注意：如果引擎已经停止，则直接返回。
+        /// 向指定的端点投递消息。注意：如果引擎已经停止，则直接返回。
         /// </summary>
         void 异步发送(IPEndPoint __接收地址, byte[] __消息);
 

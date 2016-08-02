@@ -11,13 +11,14 @@ namespace 通用访问
     public static class FT通用访问工厂
     {
         /// <summary>
-        /// 默认GB2312(936)
+        /// UTF8
         /// </summary>
         public static Encoding 文本编码 { get; set; }
 
         static FT通用访问工厂()
         {
-            文本编码 = Encoding.GetEncoding(936);
+            //文本编码 = Encoding.GetEncoding(936);
+            文本编码 = Encoding.UTF8;
         }
 
         public static IT服务端 创建服务端()

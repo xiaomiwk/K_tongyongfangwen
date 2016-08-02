@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\资源\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\LIB\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -86,7 +86,7 @@
     <Compile Include="自定义序列化\M方法执行结果Converter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\INET\INET3\INET3.csproj">
+    <ProjectReference Include="..\INET3\INET3.csproj">
       <Project>{56d6cb6d-e9b9-4361-b487-cfb87b508653}</Project>
       <Name>INET3</Name>
     </ProjectReference>

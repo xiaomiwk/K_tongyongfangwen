@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Configuration;
 
@@ -9,65 +10,116 @@ namespace Utility.存储
 {
     public static class H程序配置
     {
-        public static string 获取字符串(string __键)
+        public static string 获取字符串(string key, string configFile = null)
         {
-            if (HttpContext.Current == null)
+            Configuration config;
+            if (configFile == null)
             {
-                return ConfigurationManager.AppSettings[__键] ?? string.Empty;
+                config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             }
-            return WebConfigurationManager.AppSettings[__键] ?? string.Empty;
-        }
-
-        public static bool 获取Bool值(string __键)
-        {
-            bool __默认值;
-            var __值 = HttpContext.Current == null ? ConfigurationManager.AppSettings[__键] : WebConfigurationManager.AppSettings[__键];
-            bool.TryParse(__值, out __默认值);
-            return __默认值;
-        }
-
-        public static int 获取Int32值(string __键)
-        {
-            int __默认值;
-            var __值 = HttpContext.Current == null ? ConfigurationManager.AppSettings[__键] : WebConfigurationManager.AppSettings[__键];
-            int.TryParse(__值, out __默认值);
-            return __默认值;
-        }
-
-        public static void 设置(string __键, string __值)
-        {
-            Configuration __配置 = HttpContext.Current == null ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None) : WebConfigurationManager.OpenWebConfiguration(null);
-            __配置.AppSettings.Settings[__键].Value = __值;
-            __配置.Save(ConfigurationSaveMode.Minimal);
-            ConfigurationManager.RefreshSection("appSettings");
-        }
-
-        public static void 设置(Dictionary<string, string> __键值对)
-        {
-            if (__键值对 == null || __键值对.Count == 0)
+            else
             {
-                return;
+                config = ConfigurationManager.OpenExeConfiguration(configFile);
             }
-            Configuration __配置 = HttpContext.Current == null ? ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None) : WebConfigurationManager.OpenWebConfiguration(null);
-            foreach (var item in __键值对)
+            return config.AppSettings.Settings.AllKeys.Contains(key) ? config.AppSettings.Settings[key].Value : string.Empty;
+        }
+
+        public static bool 获取Bool值(string key, string configFile = null)
+        {
+            bool temp;
+            bool.TryParse(获取字符串(key, configFile), out temp);
+            return temp;
+        }
+
+        public static int 获取Int32值(string key, string configFile = null)
+        {
+            int temp;
+            int.TryParse(获取字符串(key, configFile), out temp);
+            return temp;
+        }
+
+        public static void 设置(string key, string value, string configFile = null)
+        {
+            bool __外部 = configFile == null;
+            Configuration config;
+            if (configFile == null)
             {
-                __配置.AppSettings.Settings[item.Key].Value = item.Value;
+                config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             }
-            __配置.Save(ConfigurationSaveMode.Minimal);
-            if (HttpContext.Current == null)
+            else
+            {
+                config = ConfigurationManager.OpenExeConfiguration(configFile);
+            }
+            config.AppSettings.Settings[key].Value = value;
+            config.Save(ConfigurationSaveMode.Minimal);
+            if (!__外部)
             {
                 ConfigurationManager.RefreshSection("appSettings");
             }
         }
 
-        public static bool 判断功能启用(string __功能)
+        public static void 设置(Dictionary<string, string> dic, string configFile = null)
         {
-            return 获取字符串("功能配置").Contains(string.Format("|{0}:开启|", __功能));
+            bool __外部 = configFile == null;
+            if (dic == null || dic.Count == 0)
+            {
+                return;
+            }
+            Configuration config;
+            if (configFile == null)
+            {
+                config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            }
+            else
+            {
+                config = ConfigurationManager.OpenExeConfiguration(configFile);
+            }
+            foreach (var item in dic)
+            {
+                config.AppSettings.Settings[item.Key].Value = item.Value;
+            }
+            config.Save(ConfigurationSaveMode.Minimal);
+            if (!__外部)
+            {
+                ConfigurationManager.RefreshSection("appSettings");
+            }
         }
 
-        public static bool 判断参数启用(string __参数)
+        public static Dictionary<string, string> 查询键值对(string key, string configFile = null)
         {
-            return 获取字符串("参数配置").Contains(string.Format("|{0}:开启|", __参数));
+            var __结果 = new Dictionary<string, string>();
+            var temp = 获取字符串(key, configFile);
+            if (string.IsNullOrEmpty(temp))
+            {
+                return __结果;
+            }
+            temp.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(q =>
+            {
+                var kv = q.Split(new string[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                if (kv.Length == 2)
+                {
+                    __结果[kv[0]] = kv[1];
+                }
+                if (kv.Length == 1)
+                {
+                    __结果[kv[0]] = "";
+                }
+            });
+            return __结果;
+        }
+
+        public static void 设置键值对(string key, Dictionary<string, string> value, string configFile = null)
+        {
+            var temp = new StringBuilder();
+            foreach (var item in value)
+            {
+                temp.AppendFormat("{0}:{1};", item.Key, item.Value);
+            }
+            if (temp.Length > 0)
+            {
+                temp = temp.Remove(temp.Length - 1, 1);
+            }
+            设置(key, temp.ToString(), configFile);
         }
 
     }

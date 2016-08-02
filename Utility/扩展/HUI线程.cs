@@ -56,16 +56,58 @@ namespace Utility.扩展
             //反馈操作结果
             __任务.ContinueWith(task =>
             {
+                __成功后执行?.Invoke();
                 __等待面板.隐藏();
-                if (__成功后执行 != null)
-                {
-                    __成功后执行();
-                }
             },
                 CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
             __任务.ContinueWith(task =>
             {
+                if (__失败后执行 != null)
+                {
+                    __失败后执行(task.Exception);
+                }
+                else
+                {
+                    new F对话框_确定("执行出错!\r\n" + (task.Exception == null ? "" : task.Exception.Message), "").ShowDialog();
+                    H日志.记录异常(task.Exception);
+                }
+                if (task.Exception != null) task.Exception.Handle(q => true);
                 __等待面板.隐藏();
+            },
+                CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+
+            //开始任务
+            __任务.Start();
+        }
+
+        public static void 异步执行(Action __异步任务, Action __成功后执行 = null, Action<Exception> __失败后执行 = null)
+        {
+            //获取并验证输入
+
+            //限制界面
+
+            //配置任务
+            var __任务 = new Task(() =>
+            {
+                var __停留最小间隔 = 500;
+                var __计时器 = new System.Diagnostics.Stopwatch();
+                __计时器.Start();
+                __异步任务();
+                __计时器.Stop();
+                if (__计时器.ElapsedMilliseconds < __停留最小间隔)
+                {
+                    Thread.Sleep((int)(__停留最小间隔 - __计时器.ElapsedMilliseconds));
+                }
+            });
+
+            //反馈操作结果
+            __任务.ContinueWith(task =>
+            {
+                __成功后执行?.Invoke();
+            },
+                CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.FromCurrentSynchronizationContext());
+            __任务.ContinueWith(task =>
+            {
                 if (__失败后执行 != null)
                 {
                     __失败后执行(task.Exception);

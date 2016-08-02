@@ -15,6 +15,7 @@ namespace Utility.WindowsForm
             this.SetStyle(ControlStyles.EnableNotifyMessage, true);
 
             this.ShowItemToolTips = true;
+            this.FullRowSelect = true;
         }
 
         protected override void OnNotifyMessage(Message m)

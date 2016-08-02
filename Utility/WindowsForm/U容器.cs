@@ -38,6 +38,10 @@ namespace Utility.WindowsForm
             {
                 __容器.BringToFront();
             }
+            foreach (var item in _所有容器)
+            {
+                item.Value.Controls[0].Visible = (item.Key == __内容);
+            }
         }
 
         public void 激活控件(Control __内容)
@@ -45,6 +49,10 @@ namespace Utility.WindowsForm
             if (_所有容器.ContainsKey(__内容))
             {
                 _所有容器[__内容].BringToFront();
+                foreach (var item in _所有容器)
+                {
+                    item.Value.Controls[0].Visible = (item.Key == __内容);
+                }
                 当前激活控件 = __内容;
             }
         }
@@ -54,6 +62,11 @@ namespace Utility.WindowsForm
             if (_所有容器.ContainsKey(__内容))
             {
                 this.Controls.Remove(_所有容器[__内容]);
+                _所有容器.Remove(__内容);
+            }
+            if (当前激活控件 == __内容 && _所有容器.Count > 0)
+            {
+                激活控件(_所有容器.First().Key);
             }
         }
     }

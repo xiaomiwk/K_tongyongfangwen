@@ -423,6 +423,8 @@ namespace Utility.À©Õ¹
         IPEndPoint[] ClientEndPoints;
         FTPUserPermission _currentperms;
 
+        bool _isLinux;
+
         internal string SessionID
         {
             get
@@ -459,6 +461,7 @@ namespace Utility.À©Õ¹
 
         internal FTPSession(Socket ClientSocket, FTPServer serv, string startdir)
         {
+            _isLinux = Environment.NewLine == "\n";
             IPEndPoint p = (IPEndPoint)ClientSocket.LocalEndPoint;
             if (serv.BannedAdresses.Contains(p.Address) && !serv.AcceptedAdresses.Contains(p.Address)) Disconnect();
             else
@@ -1470,9 +1473,17 @@ namespace Utility.À©Õ¹
         {
             if (path == null) path = "";
             if (!path.StartsWith("/")) path = "/" + path;
-            string local = _localpath + path.Replace("/", "\\");
-            local = local.Replace("\\\\", "\\");
-            return local;
+            if (!_isLinux)
+            {
+                string local = _localpath + path.Replace("/", "\\");
+                local = local.Replace("\\\\", "\\");
+                return local;
+            }
+            else
+            {
+                string local = _localpath + path.Replace("\\", "/");
+                return local;
+            }
         }
 
         private void SendMessage(string Data)

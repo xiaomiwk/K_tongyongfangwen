@@ -37,7 +37,18 @@ namespace Utility.存储
             {
                 __相对路径 = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             }
+            获取父路径(ref __相对路径, ref 路径);
             return Path.Combine(__相对路径, 路径);
+        }
+
+        private static void 获取父路径(ref string __相对路径, ref string __路径)
+        {
+            if (__路径.StartsWith("..\\"))
+            {
+                __相对路径 = Directory.GetParent(__相对路径).FullName;
+                __路径 = __路径.Substring(3);
+                 获取父路径(ref __相对路径, ref __路径);
+            }
         }
 
         public static bool 验证目录是否存在(string 目录路径, bool 方法所在程序集 = false)

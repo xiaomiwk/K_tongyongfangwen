@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using 通用访问.DTO;
 using 通用访问.自定义序列化;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using System.Diagnostics;
 
 namespace 通用访问
 {
@@ -94,6 +98,39 @@ namespace 通用访问
                 return E数据结构.对象;
             }
             return E数据结构.单值;
+        }
+
+        public static string AES解压(string __返回值)
+        {
+            using (var __目标流 = new MemoryStream())
+            {
+                using (var __源流 = new MemoryStream(Convert.FromBase64String(__返回值)))
+                {
+                    using (var __解压器 = new GZipStream(__源流, CompressionMode.Decompress))
+                    {
+                        __解压器.CopyTo(__目标流);
+                    }
+                }
+                var __解压 = Encoding.UTF8.GetString(__目标流.GetBuffer());
+                return __解压;
+            }
+        }
+
+        public static string AES压缩(string __字符串)
+        {
+            using (var __目标流 = new MemoryStream())
+            {
+                using (var __源流 = new MemoryStream(Encoding.UTF8.GetBytes(__字符串)))
+                {
+                    using (var __压缩器 = new GZipStream(__目标流, CompressionMode.Compress))
+                    {
+                        __源流.CopyTo(__压缩器);
+                    }
+                }
+                var __压缩 = Convert.ToBase64String(__目标流.GetBuffer());
+                Debug.WriteLine("压缩率 {2}%, {0} > {1}", __字符串.Length, __压缩.Length, __压缩.Length * 100 / __字符串.Length);
+                return __压缩;
+            }
         }
 
     }

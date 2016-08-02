@@ -13,7 +13,7 @@ using Utility.通用;
 
 namespace Utility.扩展
 {
-    public delegate byte[] 处理动态请求(string __页面, Dictionary<string, string> __get参数, Dictionary<string, string> __cookie参数, Dictionary<string, string> __post参数);
+    public delegate byte[] 处理动态请求(string __页面, Dictionary<string, string> __参数);
 
     public class HttpSever
     {
@@ -81,10 +81,10 @@ namespace Utility.扩展
             }
 
             _监听器 = new HttpListener();
-            _监听器.Prefixes.Add(string.Format("HTTP://localhost:{0}/", 端口));
-            _监听器.Prefixes.Add(string.Format("HTTP://127.0.0.1:{0}/", 端口));
+            _监听器.Prefixes.Add(string.Format("http://localhost:{0}/", 端口));
+            _监听器.Prefixes.Add(string.Format("http://127.0.0.1:{0}/", 端口));
             var __本机IP列表 = Dns.GetHostAddresses(Dns.GetHostName()).Where(q => q.AddressFamily == AddressFamily.InterNetwork).ToList();
-            __本机IP列表.ForEach(q => _监听器.Prefixes.Add(string.Format("HTTP://{1}:{0}/", 端口, q)));
+            __本机IP列表.ForEach(q => _监听器.Prefixes.Add(string.Format("http://{1}:{0}/", 端口, q)));
             _监听器.Start();
             已开启 = true;
             H调试.记录提示("已开启");
@@ -105,7 +105,8 @@ namespace Utility.扩展
                     }
                 }
                 已开启 = false;
-            }) { IsBackground = true }.Start();
+            })
+            { IsBackground = true }.Start();
         }
 
         public bool 已开启 { get; set; }
@@ -125,15 +126,8 @@ namespace Utility.扩展
                 {
                     __页面 = __页面.Substring(0, __页面.IndexOf('?'));
                 }
-                var __get参数字典 = 获取GET数据(__请求);
-                var __post参数字典 = 获取POST数据(__请求);
-                var __cookie数据 = __请求.Cookies;
-                var __cookie参数字典 = new Dictionary<string, string>();
-                for (int i = 0; i < __cookie数据.Count; i++)
-                {
-                    __cookie参数字典[__cookie数据[i].Name] = __cookie数据[i].Value;
-                }
-                var __响应内容 = 处理Web接收(__上下文, __页面, __get参数字典, __cookie参数字典, __post参数字典);
+                var __参数 = 获取COOKIES数据(__请求).Concat(获取GET数据(__请求)).Concat(获取POST数据(__请求)).ToDictionary(q => q.Key, q => q.Value);
+                var __响应内容 = 处理Web接收(__上下文, __页面, __参数);
                 __响应.ContentLength64 = __响应内容.Length;
                 __响应.OutputStream.Write(__响应内容, 0, __响应内容.Length);
                 __响应.OutputStream.Close();
@@ -210,6 +204,17 @@ namespace Utility.扩展
             return __字典;
         }
 
+        Dictionary<string, string> 获取COOKIES数据(HttpListenerRequest __请求)
+        {
+            var __cookie参数字典 = new Dictionary<string, string>();
+            var __cookie数据 = __请求.Cookies;
+            for (int i = 0; i < __cookie数据.Count; i++)
+            {
+                __cookie参数字典[__cookie数据[i].Name] = __cookie数据[i].Value;
+            }
+            return __cookie参数字典;
+        }
+
         public void 关闭()
         {
             H调试.记录提示("关闭");
@@ -220,7 +225,7 @@ namespace Utility.扩展
             已开启 = false;
         }
 
-        byte[] 处理Web接收(HttpListenerContext __上下文, string __页面, Dictionary<string, string> __get参数, Dictionary<string, string> __cookie参数, Dictionary<string, string> __post参数)
+        byte[] 处理Web接收(HttpListenerContext __上下文, string __页面, Dictionary<string, string> __参数)
         {
             if (__页面 == "/")
             {
@@ -232,7 +237,7 @@ namespace Utility.扩展
             if (__最后点位置 < 0 || __后缀名 == _动态请求后缀名)
             {
                 __上下文.Response.ContentType = "application/json;charset=utf-8";
-                return _处理动态请求(__页面, __get参数, __cookie参数, __post参数);
+                return _处理动态请求(__页面, __参数);
             }
             if (获取静态文件 == null)
             {
@@ -250,7 +255,7 @@ namespace Utility.扩展
                     __上下文.Response.ContentType = "application/octet-stream";
                     break;
                 case "html":
-                    __上下文.Response.ContentType = "text/html";
+                    __上下文.Response.ContentType = "text/html;charset=utf-8";
                     break;
                 case "css":
                     __上下文.Response.ContentType = "text/css;charset=utf-8";

@@ -35,7 +35,7 @@ namespace 通用访问.自定义序列化
             writer.WritePropertyName("描述");
             writer.WriteValue(__对象.描述);
             writer.WritePropertyName("返回值");
-            if (__对象.返回值.StartsWith("[") || __对象.返回值.StartsWith("{"))
+            if (__对象.返回值 != null && (__对象.返回值.StartsWith("[") || __对象.返回值.StartsWith("{")))
             {
                 writer.WriteRawValue(__对象.返回值);
             }

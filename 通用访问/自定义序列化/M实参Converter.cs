@@ -33,7 +33,7 @@ namespace 通用访问.自定义序列化
             __writer.WriteValue(__对象.名称);
             __writer.WritePropertyName("值");
 
-            if (__对象.值.TrimStart().StartsWith("{") || __对象.值.TrimStart().StartsWith("["))
+            if (__对象.值 != null && (__对象.值.TrimStart().StartsWith("{") || __对象.值.TrimStart().StartsWith("[")))
             {
                 __writer.WriteRawValue(__对象.值);
             }

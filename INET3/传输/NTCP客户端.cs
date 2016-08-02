@@ -40,8 +40,6 @@ namespace INET.传输
 
         private bool _已开启重连;
 
-        private bool _同步处理 = false;
-
         public NTCP客户端(IPEndPoint __服务器地址, IPEndPoint __本机地址, List<byte[]> __结束符)
             : this(__服务器地址, __本机地址)
         {
@@ -98,15 +96,8 @@ namespace INET.传输
             if (连接正常)
             {
                 _数据流 = _连接.GetStream();
-                if (_同步处理)
-                {
-                    new Thread(接收消息) { IsBackground = true }.Start();
-                }
-                else
-                {
-                    var __缓存 = new byte[接收缓冲区大小];
-                    _数据流.BeginRead(__缓存, 0, 接收缓冲区大小, 异步接收数据, new Tuple<NetworkStream, byte[]>(_数据流, __缓存));
-                }
+                var __缓存 = new byte[接收缓冲区大小];
+                _数据流.BeginRead(__缓存, 0, 接收缓冲区大小, 异步接收数据, new Tuple<NetworkStream, byte[]>(_数据流, __缓存));
                 On已连接();
             }
             if (自动重连 && !_已开启重连)
@@ -142,37 +133,6 @@ namespace INET.传输
                     H日志输出.记录(名称 + string.Format(": 从 [{0}] 接收异常", 服务器地址), ex.Message, TraceEventType.Warning);
                     断开();
                 }
-            }
-        }
-
-        void 接收消息()
-        {
-            while (true)
-            {
-                var __缓存 = new byte[接收缓冲区大小];
-                int __实际接收长度;
-                try
-                {
-                    __实际接收长度 = _数据流.Read(__缓存, 0, 接收缓冲区大小);
-                    if (__实际接收长度 == 0)
-                    {
-                        throw new Exception("读取不到数据");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (!连接正常)
-                    {
-                        break;
-                    }
-                    H日志输出.记录(名称 + string.Format(": 从 [{0}] 接收异常", 服务器地址), ex.Message, TraceEventType.Warning);
-                    断开();
-                    return;
-                }
-                var __实际接收字节 = new byte[__实际接收长度];
-                Buffer.BlockCopy(__缓存, 0, __实际接收字节, 0, __实际接收长度);
-                H日志输出.记录(名称 + string.Format(": 从 [{0}] 收", 服务器地址), BitConverter.ToString(__实际接收字节));
-                _IN消息分割.接收数据(服务器地址, __实际接收字节);
             }
         }
 
@@ -291,7 +251,7 @@ namespace INET.传输
             catch (Exception ex)
             {
                 H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败, {1}", 服务器地址, ex.Message));
-                throw new ApplicationException("发送失败");
+                //throw new ApplicationException("发送失败");
             }
         }
 
@@ -301,9 +261,25 @@ namespace INET.传输
             {
                 return;
             }
-            //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
-            _数据流.BeginWrite(__消息, 0, __消息.Length, null, null);
-            On发送成功(服务器地址, __消息);
+            try
+            {
+                //H日志输出.记录(名称 + string.Format(": 向 [{0}] 发", 服务器地址), BitConverter.ToString(__消息));
+                _数据流.BeginWrite(__消息, 0, __消息.Length, new AsyncCallback(q => {
+                    try
+                    {
+                        _数据流.EndWrite(q);
+                        On发送成功(服务器地址, __消息);
+                    }
+                    catch (Exception ex)
+                    {
+                        H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败, {1}", 服务器地址, ex.Message));
+                    }
+                }), null);
+            }
+            catch (Exception ex)
+            {
+                H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败, {1}", 服务器地址, ex.Message));
+            }
         }
 
         public event Action<IPEndPoint, byte[]> 收到消息;

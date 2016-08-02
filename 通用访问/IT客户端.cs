@@ -30,7 +30,7 @@ namespace 通用访问
 
         string 查询属性值(string 对象名, string 属性名, int 超时毫秒 = 3000);
 
-        string 执行方法(string 对象名, string 方法名, Dictionary<string,string> 参数列表, int 超时毫秒 = 10000);
+        string 执行方法(string 对象名, string 方法名, Dictionary<string,string> 参数列表 = null, int 超时毫秒 = 3000);
 
         void 订阅事件(string 对象名, string 事件名, Action<Dictionary<string, string>> 处理方法);
 

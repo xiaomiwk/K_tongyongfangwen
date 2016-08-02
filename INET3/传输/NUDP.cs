@@ -13,15 +13,11 @@ namespace INET.传输
     {
         private UdpClient _连接;
 
-        private readonly IN消息分割 _IN消息分割;
-
         public string 名称 { get; set; }
 
         public IPEndPoint 本机地址 { get; set; }
 
         public E传输层协议 协议 { get { return E传输层协议.UDP; } }
-
-        public E流分割方式 分割方式 { get; private set; }
 
         public DateTime 开启时间 { get; private set; }
 
@@ -31,26 +27,10 @@ namespace INET.传输
 
         public int 最大消息长度 { get; set; }
 
-        public NUDP(IPEndPoint __本机地址, List<byte[]> __结束符)
-            : this(__本机地址)
-        {
-            分割方式 = E流分割方式.结束符;
-            _IN消息分割 = new N结束符分割(this.最大消息长度, __结束符);
-            _IN消息分割.已分割消息 += _IN消息分割_分割了报文;
-        }
-
-        public NUDP(IPEndPoint __本机地址, int __消息头长度, Func<byte[], int> __解析消息体长度)
-            : this(__本机地址)
-        {
-            分割方式 = E流分割方式.消息头;
-            _IN消息分割 = new N消息头分割(this.最大消息长度, __消息头长度, __解析消息体长度);
-            _IN消息分割.已分割消息 += _IN消息分割_分割了报文;
-        }
-
-        protected NUDP(IPEndPoint __本机地址)
+        public NUDP(IPEndPoint __本机地址)
         {
             this.本机地址 = __本机地址;
-            this.最大消息长度 = 5000;
+            this.最大消息长度 = 100000;
             _连接 = this.本机地址 == null ? new UdpClient(new IPEndPoint(IPAddress.Any, 0)) : new UdpClient(本机地址);
 
             发送缓冲区大小 = _连接.Client.SendBufferSize;
@@ -71,7 +51,27 @@ namespace INET.传输
             开启时间 = DateTime.Now;
             _连接.Client.SendBufferSize = 发送缓冲区大小;
             _连接.Client.ReceiveBufferSize = 接收缓冲区大小;
-            new Thread(处理接收) { IsBackground = true }.Start();
+            //new Thread(处理接收) { IsBackground = true }.Start();
+            _连接.BeginReceive(异步接收数据, null);            
+        }
+
+        public void 异步接收数据(IAsyncResult ar)
+        {
+            IPEndPoint __地址 = null;
+            try
+            {
+                var __接收字节 = _连接.EndReceive(ar, ref __地址);
+                if (__接收字节 == null || __接收字节.Length == 0)
+                {
+                    return;
+                }
+                On收到消息(__地址, __接收字节);
+                _连接.BeginReceive(异步接收数据, null);
+            }
+            catch (Exception ex)
+            {
+                H日志输出.记录(名称 + string.Format(": 从 [{0}] 接收异常", __地址), ex.Message, TraceEventType.Warning);
+            }
         }
 
         private void 处理接收()
@@ -83,8 +83,7 @@ namespace INET.传输
                 {
                     Byte[] __接收内容 = _连接.Receive(ref __发送地址);
                     H日志输出.记录(string.Format("{0}: 从 [{1}] 收", 名称, __发送地址), BitConverter.ToString(__接收内容));
-                    _IN消息分割.接收数据(__发送地址, __接收内容);
-                    //On收到消息(__发送地址, __接收内容);
+                    On收到消息(__发送地址, __接收内容);
                 }
                 catch (Exception ex)
                 {
@@ -111,8 +110,17 @@ namespace INET.传输
 
         public void 异步发送(IPEndPoint __远端地址, byte[] __消息)
         {
-            _连接.BeginSend(__消息, __消息.Length, __远端地址, null, null);
-            On发送成功(__远端地址, __消息);
+            _连接.BeginSend(__消息, __消息.Length, new AsyncCallback(q => {
+                try
+                {
+                    _连接.EndSend(q);
+                    On发送成功(__远端地址, __消息);
+                }
+                catch (Exception ex)
+                {
+                    H日志输出.记录(名称 + string.Format(": 向 [{0}] 发送失败, {1}", __远端地址, ex.Message));
+                }
+            }), null);
         }
 
         public event Action<IPEndPoint, byte[]> 收到消息;

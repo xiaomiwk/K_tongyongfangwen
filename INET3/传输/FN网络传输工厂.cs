@@ -46,17 +46,10 @@ namespace INET.传输
         /// <summary>
         /// 创建UDP引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
         /// </summary>       
-        public static INUDP 创建UDP节点(IPEndPoint __本机地址, List<byte[]> __结束符)
+        public static INUDP 创建UDP节点(IPEndPoint __本机地址)
         {
-            return new NUDP(__本机地址, __结束符);
+            return new NUDP(__本机地址);
         }
 
-        /// <summary>
-        /// 创建UDP引擎。对于返回的引擎实例，可以设置其更多属性，然后调用其Initialize方法启动引擎。
-        /// </summary>       
-        public static INUDP 创建UDP节点(IPEndPoint __本机地址, int __消息头长度, Func<byte[], int> __解析消息体长度)
-        {
-            return new NUDP(__本机地址, __消息头长度, __解析消息体长度);
-        }
     }
 }

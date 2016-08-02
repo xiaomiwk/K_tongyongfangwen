@@ -33,20 +33,20 @@ namespace 通用访问.服务端
         {
             if (!HttpListener.IsSupported)
             {
-                Debug.WriteLine("Windows XP SP2 or Server 2003 is required to use the HttpListener class.");
+                H日志输出.记录("通用访问:WEBAPI不支持");
                 return;
             }
             if (已开启)
             {
-                Debug.WriteLine("BT服务端 已开启");
+                H日志输出.记录("通用访问:已开启");
                 return;
             }
 
             _监听器 = new HttpListener();
-            _监听器.Prefixes.Add(string.Format("HTTP://localhost:{0}/", 端口));
-            _监听器.Prefixes.Add(string.Format("HTTP://127.0.0.1:{0}/", 端口));
+            _监听器.Prefixes.Add(string.Format("http://localhost:{0}/", 端口));
+            _监听器.Prefixes.Add(string.Format("http://127.0.0.1:{0}/", 端口));
             var __本机IP列表 = Dns.GetHostAddresses(Dns.GetHostName()).Where(q => q.AddressFamily == AddressFamily.InterNetwork).ToList();
-            __本机IP列表.ForEach(q => _监听器.Prefixes.Add(string.Format("HTTP://{1}:{0}/", 端口, q)));
+            __本机IP列表.ForEach(q => _监听器.Prefixes.Add(string.Format("http://{1}:{0}/", 端口, q)));
             _监听器.Start();
             已开启 = true;
 
@@ -66,7 +66,7 @@ namespace 通用访问.服务端
                         }
                     }
                 }
-                Debug.WriteLine("BWebApi 已退出");
+                H日志输出.记录("通用访问:WEBAPI 已退出");
                 已开启 = false;
             }) { IsBackground = true }.Start();
         }
@@ -187,6 +187,7 @@ namespace 通用访问.服务端
 
         byte[] 处理Web接收(HttpListenerContext __上下文, string __页面, Dictionary<string, string> __get参数, Dictionary<string, string> __cookie参数, Dictionary<string, string> __post参数)
         {
+            H日志输出.记录(__页面);
             if (__页面 == "/")
             {
                 __页面 = "/index.html";
@@ -212,7 +213,7 @@ namespace 通用访问.服务端
                     __上下文.Response.ContentType = "text/html;charset=utf-8";
                     break;
                 case "k":
-                    Debug.WriteLine(string.Format("页面: {0}", HttpUtility.UrlDecode(__页面)));
+                    H日志输出.记录(string.Format("页面：{0}, GET参数：{1}, POST参数：{2}", HttpUtility.UrlDecode(__文件名), HJSON.序列化(__get参数,false), HJSON.序列化(__post参数, false)));
                     __上下文.Response.ContentType = "application/json;charset=utf-8";
                     string __发送;
                     switch (__文件名)

@@ -12,7 +12,7 @@ namespace Utility.WindowsForm
 {
     public partial class F调试窗口 : FormK
     {
-        private H窗口输出 _H窗口输出;
+        private B窗口输出 __窗口输出;
 
         public F调试窗口()
         {
@@ -24,14 +24,14 @@ namespace Utility.WindowsForm
             base.OnLoad(e);
             this.out信息.DoubleClick += out信息_DoubleClick;
 
-            _H窗口输出 = new H窗口输出(this.out信息);
-            Trace.Listeners.Add(_H窗口输出);
+            __窗口输出 = new B窗口输出(this.out信息);
+            Trace.Listeners.Add(__窗口输出);
             this.FormClosing += F调试窗口_FormClosing;
         }
 
         void F调试窗口_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Trace.Listeners.Remove(_H窗口输出);
+            Trace.Listeners.Remove(__窗口输出);
         }
 
         void out信息_DoubleClick(object sender, EventArgs e)
@@ -39,35 +39,35 @@ namespace Utility.WindowsForm
             this.out信息.Clear();
         }
 
-        class H窗口输出 : TraceListener
+    }
+
+    public class B窗口输出 : TraceListener
+    {
+        private TextBox _文本框;
+
+        public B窗口输出(TextBox __文本框)
         {
-            private TextBox _文本框;
-
-            public H窗口输出(TextBox __文本框)
-            {
-                _文本框 = __文本框;
-            }
-
-            public override void Write(string message)
-            {
-                if (_文本框.InvokeRequired)
-                {
-                    _文本框.BeginInvoke(new Action<string>(Write), message);
-                    return;
-                }
-                if (_文本框.TextLength > 5000)
-                {
-                    _文本框.Text = _文本框.Text.Substring(4000);
-                }
-
-                _文本框.AppendText(message);
-            }
-
-            public override void WriteLine(string message)
-            {
-                Write(message + Environment.NewLine);
-            }
+            _文本框 = __文本框;
         }
 
+        public override void Write(string message)
+        {
+            if (_文本框.InvokeRequired)
+            {
+                _文本框.BeginInvoke(new Action<string>(Write), message);
+                return;
+            }
+            if (_文本框.TextLength > 5000)
+            {
+                _文本框.Text = _文本框.Text.Substring(4000);
+            }
+
+            _文本框.AppendText(message);
+        }
+
+        public override void WriteLine(string message)
+        {
+            Write(message + Environment.NewLine);
+        }
     }
 }

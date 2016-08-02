@@ -31,7 +31,7 @@ namespace Utility.通用
             提示可恢复异常 = (m, n) => MessageBox.Show(n, m, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             提示不可恢复异常 = (m, n) =>
             {
-                if (HttpContext.Current != null)
+                if (HttpContext.Current == null)
                 {
                     if (Debugger.IsAttached)
                     {
@@ -61,7 +61,7 @@ namespace Utility.通用
             提示不可恢复异常(__预计异常 != null ? __预计异常.Message : "程序出错, 即将关闭", ex.ToString());
         }
 
-        internal static void 处理UI线程(Exception ex, bool __未处理自动退出 = true )
+        internal static void 处理UI线程(Exception ex, bool __未处理自动退出 = true)
         {
             if (自定义处理 != null)
             {
@@ -110,17 +110,16 @@ namespace Utility.通用
                 提示可恢复异常("错误", ex.Message);
                 return;
             }
-             
+
             H调试.记录异常(ex, "！！！处理UI线程！！！");
-            提示不可恢复异常("程序出错, 即将关闭", __异常描述);
             if (__未处理自动退出)
             {
                 H调试.截屏();
-                //Environment.FailFast("UI线程中出现未处理异常", ex);
+                提示不可恢复异常("出现未预计的错误，请将日志发送给开发人员", __异常描述);
                 Environment.Exit(0);
             }
+            提示可恢复异常("错误", "出现未预计的错误，请将日志发送给开发人员");
         }
-
     }
 }
 

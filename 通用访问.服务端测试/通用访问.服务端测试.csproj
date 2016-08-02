@@ -119,11 +119,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\INET\INET3\INET3.csproj">
+    <ProjectReference Include="..\INET3\INET3.csproj">
       <Project>{56d6cb6d-e9b9-4361-b487-cfb87b508653}</Project>
       <Name>INET3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Utility\Utility.csproj">
+    <ProjectReference Include="..\Utility\Utility.csproj">
       <Project>{c56e903b-f745-4e12-a01b-90e915e04968}</Project>
       <Name>Utility</Name>
     </ProjectReference>

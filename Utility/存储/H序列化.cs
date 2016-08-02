@@ -214,6 +214,27 @@ namespace Utility.存储
             return __结果;
         }
 
+        public static List<int> 段列表转单值列表(List<Tuple<int, int>> __段列表, bool __过滤重复 = false)
+        {
+            if (__段列表 == null || __段列表.Count == 0)
+            {
+                return new List<int>();
+            }
+            var __结果 = new List<int>();
+            for (int i = 0; i < __段列表.Count; i++)
+            {
+                for (int j = __段列表[i].Item1; j <= __段列表[i].Item2; j++)
+                {
+                    __结果.Add(j);
+                }
+            }
+            if (__过滤重复)
+            {
+                __结果 = __结果.Distinct().ToList();
+            }
+            return __结果;
+        }
+
         public static string[,] 分割表格(string __制表符表格)
         {
             if (string.IsNullOrEmpty(__制表符表格) || !__制表符表格.Contains("\r\n"))

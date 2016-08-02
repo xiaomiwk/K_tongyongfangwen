@@ -15,15 +15,12 @@ using Utility.存储;
 
 namespace System.Runtime.CompilerServices
 {
-    [Diagnostics.CodeAnalysis.SuppressMessage("", "CS1685")]
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class CallerMemberNameAttribute : Attribute { }
 
-    [Diagnostics.CodeAnalysis.SuppressMessage("", "CS1685")]
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class CallerFilePathAttribute : Attribute { }
 
-    [Diagnostics.CodeAnalysis.SuppressMessage("", "CS1685")]
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
     public class CallerLineNumberAttribute : Attribute { }
 }
@@ -63,6 +60,7 @@ namespace Utility.通用
             if (handler != null) handler(__标题, __内容, __等级, __线程);
         }
 
+#pragma warning disable CS0436 // 类型与导入类型冲突
         public static void 记录(string __信息, TraceEventType __等级 = TraceEventType.Verbose, string __内容 = null, [CallerMemberName]string __方法 = "", [CallerFilePath]string __文件 = "", [CallerLineNumber]int __行号 = 0)
         {
             输出(__信息, __等级, __内容, __方法, __文件, __行号);
@@ -98,6 +96,7 @@ namespace Utility.通用
             __内容 = __内容 + Environment.NewLine + 获取异常描述(__异常);
             输出(__信息, __等级, __内容, __方法, __文件, __行号);
         }
+#pragma warning restore CS0436 // 类型与导入类型冲突
 
         private static void 输出(string __信息, TraceEventType __等级, string __内容, string __方法, string __文件, int __行号)
         {
