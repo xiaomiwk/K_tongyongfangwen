@@ -16,7 +16,6 @@ using INET;
 using Utility.WindowsForm;
 using Utility.存储;
 using Utility.通用;
-using 通用访问;
 using 通用访问.UI组件;
 
 namespace 通用访问.工具
@@ -109,7 +108,12 @@ namespace 通用访问.工具
                 return;
             }
             __设备.控件.断开();
+            __设备.控件.Dispose();
+            this.out命令明细容器.删除控件(__设备.控件);
+            __设备.控件 = null;
+            __设备.访问入口 = null;
             this.out提示.Visible = true;
+            显示连接状态(__node, true);
         }
 
         private void 加载设备列表()
@@ -172,14 +176,6 @@ namespace 通用访问.工具
             _当前设备节点 = e.Node;
             _当前设备节点.BackColor = Color.Yellow;
             this.out提示.Visible = false;
-            Action __显示连接异常 = () => this.BeginInvoke(new Action(() =>
-            {
-                e.Node.ForeColor = Color.Red;
-            }));
-            Action __显示连接正常 = () => this.BeginInvoke(new Action(() =>
-            {
-                e.Node.ForeColor = Color.Black;
-            }));
             if (__设备.访问入口 == null)
             {
                 __设备.控件 = new F命令列表(new IPEndPoint(__设备.IP, __设备.端口号), __设备.名称) { Dock = DockStyle.Fill };
@@ -189,11 +185,11 @@ namespace 通用访问.工具
                 {
                     if (!__主动)
                     {
-                        __显示连接异常();
+                        显示连接状态(_当前设备节点, false);
                     }
                 };
-                __设备.访问入口.已连接 += __显示连接正常;
-                __显示连接正常();
+                __设备.访问入口.已连接 += () => 显示连接状态(_当前设备节点, true);
+                显示连接状态(_当前设备节点, __设备.访问入口.连接正常);
             }
             else
             {
@@ -201,9 +197,13 @@ namespace 通用访问.工具
                 if (!__设备.访问入口.连接正常)
                 {
                     __设备.控件.初始化命令列表();
-                    __显示连接正常();
                 }
             }
+        }
+
+        private void 显示连接状态(TreeNode __节点, bool __正常)
+        {
+            __节点.ForeColor = __正常 ? Color.Black : Color.Red;
         }
 
         private class M设备

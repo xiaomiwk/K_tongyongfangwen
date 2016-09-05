@@ -30,6 +30,12 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.out值 = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.do清空记录 = new Utility.WindowsForm.U按钮();
+            this.out记录 = new System.Windows.Forms.TextBox();
+            this.do订阅 = new Utility.WindowsForm.U按钮();
+            this.label4 = new System.Windows.Forms.Label();
+            this.do取消订阅 = new Utility.WindowsForm.U按钮();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -37,12 +43,6 @@
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label1 = new System.Windows.Forms.Label();
-            this.out记录 = new System.Windows.Forms.TextBox();
-            this.do订阅 = new Utility.WindowsForm.U按钮();
-            this.label4 = new System.Windows.Forms.Label();
-            this.do取消订阅 = new Utility.WindowsForm.U按钮();
-            this.do清空记录 = new Utility.WindowsForm.U按钮();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -98,55 +98,6 @@
             this.out值.Size = new System.Drawing.Size(574, 127);
             this.out值.TabIndex = 31;
             // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "名称";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 78;
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "类型";
-            this.Column6.Name = "Column6";
-            this.Column6.ReadOnly = true;
-            this.Column6.Width = 78;
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "结构";
-            this.Column5.Name = "Column5";
-            this.Column5.ReadOnly = true;
-            this.Column5.Width = 78;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "值";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 70;
-            // 
-            // Column7
-            // 
-            this.Column7.HeaderText = "默认值";
-            this.Column7.Name = "Column7";
-            this.Column7.ReadOnly = true;
-            this.Column7.Width = 78;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "描述";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 78;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "范围";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Width = 78;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -155,6 +106,22 @@
             this.label1.Size = new System.Drawing.Size(32, 17);
             this.label1.TabIndex = 30;
             this.label1.Text = "参数";
+            // 
+            // do清空记录
+            // 
+            this.do清空记录.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
+            this.do清空记录.FlatAppearance.BorderSize = 0;
+            this.do清空记录.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.do清空记录.ForeColor = System.Drawing.Color.White;
+            this.do清空记录.Location = new System.Drawing.Point(271, 3);
+            this.do清空记录.Name = "do清空记录";
+            this.do清空记录.Size = new System.Drawing.Size(100, 26);
+            this.do清空记录.TabIndex = 36;
+            this.do清空记录.Text = "清空记录";
+            this.do清空记录.UseVisualStyleBackColor = false;
+            this.do清空记录.大小 = new System.Drawing.Size(100, 26);
+            this.do清空记录.文字颜色 = System.Drawing.Color.White;
+            this.do清空记录.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // out记录
             // 
@@ -182,6 +149,7 @@
             this.do订阅.Text = "订阅";
             this.do订阅.UseVisualStyleBackColor = false;
             this.do订阅.大小 = new System.Drawing.Size(100, 26);
+            this.do订阅.文字颜色 = System.Drawing.Color.White;
             this.do订阅.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
             // label4
@@ -206,22 +174,58 @@
             this.do取消订阅.Text = "取消订阅";
             this.do取消订阅.UseVisualStyleBackColor = false;
             this.do取消订阅.大小 = new System.Drawing.Size(100, 26);
+            this.do取消订阅.文字颜色 = System.Drawing.Color.White;
             this.do取消订阅.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
             // 
-            // do清空记录
+            // Column1
             // 
-            this.do清空记录.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
-            this.do清空记录.FlatAppearance.BorderSize = 0;
-            this.do清空记录.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.do清空记录.ForeColor = System.Drawing.Color.White;
-            this.do清空记录.Location = new System.Drawing.Point(271, 3);
-            this.do清空记录.Name = "do清空记录";
-            this.do清空记录.Size = new System.Drawing.Size(100, 26);
-            this.do清空记录.TabIndex = 36;
-            this.do清空记录.Text = "清空记录";
-            this.do清空记录.UseVisualStyleBackColor = false;
-            this.do清空记录.大小 = new System.Drawing.Size(100, 26);
-            this.do清空记录.颜色 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(164)))), ((int)(((byte)(221)))));
+            this.Column1.HeaderText = "名称";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 78;
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "类型";
+            this.Column6.Name = "Column6";
+            this.Column6.ReadOnly = true;
+            this.Column6.Width = 78;
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "结构";
+            this.Column5.Name = "Column5";
+            this.Column5.ReadOnly = true;
+            this.Column5.Width = 78;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "值";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Visible = false;
+            this.Column2.Width = 5;
+            // 
+            // Column7
+            // 
+            this.Column7.HeaderText = "默认值";
+            this.Column7.Name = "Column7";
+            this.Column7.ReadOnly = true;
+            this.Column7.Width = 78;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "描述";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 78;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "范围";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 78;
             // 
             // F对象_事件
             // 
@@ -247,6 +251,12 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView out值;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox out记录;
+        private Utility.WindowsForm.U按钮 do订阅;
+        private System.Windows.Forms.Label label4;
+        private Utility.WindowsForm.U按钮 do取消订阅;
+        private Utility.WindowsForm.U按钮 do清空记录;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
@@ -254,15 +264,5 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox out记录;
-        private Utility.WindowsForm.U按钮 do订阅;
-        private System.Windows.Forms.Label label4;
-        private Utility.WindowsForm.U按钮 do取消订阅;
-        private Utility.WindowsForm.U按钮 do清空记录;
-
-
-
-
     }
 }

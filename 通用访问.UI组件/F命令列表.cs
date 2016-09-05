@@ -277,12 +277,14 @@ namespace 通用访问.UI组件
                     }
                     __nodes = __分类节点[q.分类].Nodes;
                 }
+                __nodes = __nodes.Add(q.名称).Nodes;
                 var __方法列表 = _当前设备.访问入口.查询对象明细(q.名称).方法列表;
                 __方法列表.ForEach(k =>
                 {
                     if ((k.角色 & _当前设备.视图) == _当前设备.视图)
                     {
-                        __nodes.Add(string.Format("{0}.{1}", q.名称, k.名称)).Tag = new Tuple<string, M方法>(q.名称, k);
+                        //__nodes.Add(string.Format("{0}.{1}", q.名称, k.名称)).Tag = new Tuple<string, M方法>(q.名称, k);
+                        __nodes.Add(k.名称).Tag = new Tuple<string, M方法>(q.名称, k);
                     }
                 });
             });

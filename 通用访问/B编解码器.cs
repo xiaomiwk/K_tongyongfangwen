@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using INET.模板;
-using Newtonsoft.Json;
-using 通用访问.自定义序列化;
 
 namespace 通用访问
 {
     class B编解码器 : N通用编解码
     {
         private Encoding _编码;
-
-        //private List<JsonConverter> _自定义序列化 = new List<JsonConverter>();
 
         public Action<Type, string> 解码拦截;
 

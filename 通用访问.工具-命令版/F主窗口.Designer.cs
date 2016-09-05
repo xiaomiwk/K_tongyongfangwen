@@ -126,6 +126,7 @@
             this.u窗体头1.Name = "u窗体头1";
             this.u窗体头1.Size = new System.Drawing.Size(1278, 45);
             this.u窗体头1.TabIndex = 4;
+            this.u窗体头1.无背景图片 = false;
             this.u窗体头1.显示Logo = false;
             this.u窗体头1.显示最大化按钮 = true;
             this.u窗体头1.显示最小化按钮 = true;

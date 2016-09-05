@@ -36,11 +36,7 @@
     <ApplicationIcon>K.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="INET3, Version=1.16.330.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LIB\INET3.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\资源\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -56,7 +52,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Utility, Version=1.16.330.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LIB\Utility.dll</HintPath>
+      <HintPath>..\..\调试输出\Utility\Utility.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

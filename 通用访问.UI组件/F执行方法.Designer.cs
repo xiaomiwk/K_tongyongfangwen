@@ -45,6 +45,7 @@
             this.do清空 = new Utility.WindowsForm.U按钮();
             this.do解析2 = new Utility.WindowsForm.U按钮();
             this.label4 = new System.Windows.Forms.Label();
+            this.out命令 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -89,7 +90,7 @@
             this.do执行.FlatAppearance.BorderSize = 0;
             this.do执行.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.do执行.ForeColor = System.Drawing.Color.White;
-            this.do执行.Location = new System.Drawing.Point(59, 145);
+            this.do执行.Location = new System.Drawing.Point(47, 145);
             this.do执行.Name = "do执行";
             this.do执行.Size = new System.Drawing.Size(100, 26);
             this.do执行.TabIndex = 18;
@@ -106,7 +107,7 @@
             this.do解析.FlatAppearance.BorderSize = 0;
             this.do解析.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.do解析.ForeColor = System.Drawing.Color.White;
-            this.do解析.Location = new System.Drawing.Point(165, 145);
+            this.do解析.Location = new System.Drawing.Point(153, 145);
             this.do解析.Name = "do解析";
             this.do解析.Size = new System.Drawing.Size(100, 26);
             this.do解析.TabIndex = 23;
@@ -134,10 +135,10 @@
             this.Column3,
             this.Column4});
             this.out值.GridColor = System.Drawing.SystemColors.Control;
-            this.out值.Location = new System.Drawing.Point(59, 0);
+            this.out值.Location = new System.Drawing.Point(47, 0);
             this.out值.Name = "out值";
             this.out值.RowTemplate.Height = 23;
-            this.out值.Size = new System.Drawing.Size(574, 139);
+            this.out值.Size = new System.Drawing.Size(586, 139);
             this.out值.TabIndex = 16;
             // 
             // Column1
@@ -191,7 +192,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label1.Location = new System.Drawing.Point(21, 0);
+            this.label1.Location = new System.Drawing.Point(6, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(32, 17);
             this.label1.TabIndex = 15;
@@ -220,9 +221,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.out返回值.Font = new System.Drawing.Font("新宋体", 9F);
-            this.out返回值.Location = new System.Drawing.Point(59, 4);
+            this.out返回值.Location = new System.Drawing.Point(47, 4);
             this.out返回值.Name = "out返回值";
-            this.out返回值.Size = new System.Drawing.Size(574, 85);
+            this.out返回值.Size = new System.Drawing.Size(586, 85);
             this.out返回值.TabIndex = 27;
             this.out返回值.Text = "";
             // 
@@ -233,7 +234,7 @@
             this.do清空.FlatAppearance.BorderSize = 0;
             this.do清空.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.do清空.ForeColor = System.Drawing.Color.White;
-            this.do清空.Location = new System.Drawing.Point(59, 95);
+            this.do清空.Location = new System.Drawing.Point(47, 95);
             this.do清空.Name = "do清空";
             this.do清空.Size = new System.Drawing.Size(100, 26);
             this.do清空.TabIndex = 26;
@@ -250,7 +251,7 @@
             this.do解析2.FlatAppearance.BorderSize = 0;
             this.do解析2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.do解析2.ForeColor = System.Drawing.Color.White;
-            this.do解析2.Location = new System.Drawing.Point(165, 95);
+            this.do解析2.Location = new System.Drawing.Point(153, 95);
             this.do解析2.Name = "do解析2";
             this.do解析2.Size = new System.Drawing.Size(100, 26);
             this.do解析2.TabIndex = 25;
@@ -264,26 +265,36 @@
             // 
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label4.Location = new System.Drawing.Point(21, 2);
+            this.label4.Location = new System.Drawing.Point(6, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(32, 17);
             this.label4.TabIndex = 22;
             this.label4.Text = "结果";
             // 
+            // out命令
+            // 
+            this.out命令.AutoSize = true;
+            this.out命令.Location = new System.Drawing.Point(47, 9);
+            this.out命令.Name = "out命令";
+            this.out命令.Size = new System.Drawing.Size(32, 17);
+            this.out命令.TabIndex = 26;
+            this.out命令.Text = "XXX";
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.Gray;
-            this.label2.Location = new System.Drawing.Point(1, 9);
+            this.label2.Location = new System.Drawing.Point(9, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 17);
-            this.label2.TabIndex = 23;
-            this.label2.Text = "命令执行";
+            this.label2.Size = new System.Drawing.Size(32, 17);
+            this.label2.TabIndex = 25;
+            this.label2.Text = "命令";
             // 
             // F执行方法
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.out命令);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -318,11 +329,10 @@
         private Utility.WindowsForm.U按钮 do解析;
         private System.Windows.Forms.Label label4;
         private Utility.WindowsForm.U按钮 do解析2;
-        private System.Windows.Forms.Label label2;
         private Utility.WindowsForm.U按钮 do清空;
         private System.Windows.Forms.RichTextBox out返回值;
         private Utility.WindowsForm.U按钮 do导出;
-
-
+        private System.Windows.Forms.Label out命令;
+        private System.Windows.Forms.Label label2;
     }
 }

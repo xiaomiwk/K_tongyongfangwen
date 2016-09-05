@@ -41,6 +41,7 @@ namespace 通用访问.UI组件
             this.do解析2.Visible = false;
             this.splitContainer1.Panel1Collapsed = true;
             this.do导出.Click += do导出_Click;
+            this.out命令.Text = "";
         }
 
         void do导出_Click(object sender, EventArgs e)
@@ -61,6 +62,7 @@ namespace 通用访问.UI组件
         {
             _对象 = __对象;
             _方法 = __方法;
+            this.out命令.Text = string.Format("{0}.{1}", _对象, _方法.名称);
             this.out值.Rows.Clear();
             if (_方法.形参列表 != null)
             {
