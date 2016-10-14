@@ -25,14 +25,35 @@ namespace 通用访问
             {12,typeof(M接收事件)},
         };
 
+        static Dictionary<Type, string> _标识字典 = new Dictionary<Type, string>();
+
+        public static Dictionary<Int16, string> 通道字典 = new Dictionary<Int16, string>
+        {
+            {1,"请求"},
+            {2,"请求"},
+            {3,"请求"},
+            {4,"请求"},
+            {5,"请求"},
+            {6,"请求"},
+            {7,"请求"},
+            {8,"请求"},
+            {9,"请求"},
+            {11,"请求"},
+            {12,"通知"},
+        };
+
         public static string 查询功能码(Type __报文类型)
         {
-            foreach (var __KY in 报文字典)
+            if (_标识字典.Count == 0)
             {
-                if (__KY.Value == __报文类型)
+                foreach (var __kv in 报文字典)
                 {
-                    return __KY.Key.ToString("X4");
+                    _标识字典[__kv.Value] = __kv.Key.ToString("X4");
                 }
+            }
+            if (_标识字典.ContainsKey(__报文类型))
+            {
+                return _标识字典[__报文类型];
             }
             throw new ApplicationException(string.Format("报文类型无效: {0}", __报文类型));
         }
